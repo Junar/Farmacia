@@ -2,7 +2,6 @@ package com.junar.searchpharma;
 
 import java.util.Locale;
 
-import android.annotation.SuppressLint;
 import android.app.ActionBar;
 import android.app.FragmentTransaction;
 import android.os.Bundle;
@@ -10,18 +9,14 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
-import android.support.v4.app.NavUtils;
 import android.support.v4.view.ViewPager;
-import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.Menu;
-import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Spinner;
 import android.widget.TextView;
 
-public class MainActivity extends FragmentActivity implements ActionBar.TabListener {
+public class SearchPharmaActivity extends FragmentActivity implements ActionBar.TabListener {
 
     /**
      * The {@link android.support.v4.view.PagerAdapter} that will provide
@@ -117,8 +112,12 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
             // below) with the page number as its lone argument.        	
         	switch (position) {
         		case 0:
-        			Fragment fragment = new SearchPharmaCommuneFragment();
-        			return fragment;
+        			Fragment communeFragment = new SearchPharmaCommuneFragment();
+        			return communeFragment;
+        			
+        		case 1:
+        			Fragment closestFragment = new SearchPharmaClosestFragment();
+        			return closestFragment;
         			
         		default:
         			Fragment dummyFragment = new DummySectionFragment();
@@ -174,8 +173,5 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
             return rootView;
         }
     }
-    
-    public static class SearchClosestFragment extends Fragment {
-    	
-    }
+   
 }

@@ -1,10 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 	<string-array name="region_array">
+	    <item>Seleccione Región</item>
 	    <item>I Región</item>
 	    <item>II Región</item>
 	    <item>III Región</item>
 	    <item>IV Región</item>
 	    <item>V Región</item>
 	</string-array>    
+	
+	<string-array name="commune_array">
+	    <item>Seleccione Comuna</item>
+	</string-array>
 </resources>

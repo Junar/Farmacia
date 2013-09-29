@@ -13,13 +13,18 @@ public class SearchPharmaCommuneFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
             Bundle savedInstanceState) {
     	View rootView = inflater.inflate(R.layout.fragment_commune, container, false);    	
-    	Spinner spinner = (Spinner) rootView.findViewById(R.id.spinner_region);
+    	Spinner spinnerRegion = (Spinner) rootView.findViewById(R.id.spinner_region);
+    	Spinner spinnerCommune = (Spinner) rootView.findViewById(R.id.spinner_commune);
     	
-    	ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(getActivity(), 
+    	ArrayAdapter<CharSequence> adapterRegion = ArrayAdapter.createFromResource(getActivity(), 
     			R.array.region_array, android.R.layout.simple_spinner_item);
+    	ArrayAdapter<CharSequence> adapterCommune = ArrayAdapter.createFromResource(getActivity(), 
+    			R.array.commune_array, android.R.layout.simple_spinner_item);
     	
-    	adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-    	spinner.setAdapter(adapter);
+    	adapterRegion.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+    	adapterCommune.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+    	spinnerRegion.setAdapter(adapterRegion);
+    	spinnerCommune.setAdapter(adapterCommune);
     	        	
     	return rootView;        	
     }
