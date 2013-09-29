@@ -1,10 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <string name="app_name">SearchPharma</string>
+    <string name="app_name">Farmacias de Turno</string>
     <string name="action_settings">Settings</string>
     <string name="title_section1">Por Comuna</string>
     <string name="title_section2">Cercanas</string>
     <string name="title_section3">Más Info</string>
-
+    
+	<string name="commune_text">Seleccione la región y comuna en la que desea buscar farmacias de turno:</string>
 </resources>

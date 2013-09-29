@@ -2,6 +2,7 @@ package com.junar.searchpharma;
 
 import java.util.Locale;
 
+import android.annotation.SuppressLint;
 import android.app.ActionBar;
 import android.app.FragmentTransaction;
 import android.os.Bundle;
@@ -17,6 +18,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Spinner;
 import android.widget.TextView;
 
 public class MainActivity extends FragmentActivity implements ActionBar.TabListener {
@@ -112,12 +114,20 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
         public Fragment getItem(int position) {
             // getItem is called to instantiate the fragment for the given page.
             // Return a DummySectionFragment (defined as a static inner class
-            // below) with the page number as its lone argument.
-            Fragment fragment = new DummySectionFragment();
-            Bundle args = new Bundle();
-            args.putInt(DummySectionFragment.ARG_SECTION_NUMBER, position + 1);
-            fragment.setArguments(args);
-            return fragment;
+            // below) with the page number as its lone argument.        	
+        	switch (position) {
+        		case 0:
+        			Fragment fragment = new SearchPharmaCommuneFragment();
+        			return fragment;
+        			
+        		default:
+        			Fragment dummyFragment = new DummySectionFragment();
+                    Bundle dummyArgs = new Bundle();
+                    dummyArgs.putInt(DummySectionFragment.ARG_SECTION_NUMBER, position + 15);
+                    dummyFragment.setArguments(dummyArgs);
+                    return dummyFragment;
+        	}
+            
         }
 
         @Override
@@ -160,9 +170,12 @@ public class MainActivity extends FragmentActivity implements ActionBar.TabListe
                 Bundle savedInstanceState) {
             View rootView = inflater.inflate(R.layout.fragment_main_dummy, container, false);
             TextView dummyTextView = (TextView) rootView.findViewById(R.id.section_label);
-            dummyTextView.setText(Integer.toString(getArguments().getInt(ARG_SECTION_NUMBER)));
+            dummyTextView.setText("Foo! ".concat(Integer.toString(getArguments().getInt(ARG_SECTION_NUMBER))));
             return rootView;
         }
     }
-
+    
+    public static class SearchClosestFragment extends Fragment {
+    	
+    }
 }
