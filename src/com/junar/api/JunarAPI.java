@@ -66,7 +66,7 @@ public class JunarAPI {
         
         AsyncHttpResponseHandler responseHandler = new AsyncHttpResponseHandler() {
         	public void onSuccess(String response) {
-        		
+        		Log.v("info", response);
         	}
         	
 			@Override
