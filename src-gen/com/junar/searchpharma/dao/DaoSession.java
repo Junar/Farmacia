@@ -9,9 +9,13 @@ import de.greenrobot.dao.AbstractDaoSession;
 import de.greenrobot.dao.identityscope.IdentityScopeType;
 import de.greenrobot.dao.internal.DaoConfig;
 
+import com.junar.searchpharma.Region;
+import com.junar.searchpharma.Commune;
 import com.junar.searchpharma.Pharmacy;
 import com.junar.searchpharma.Complaint;
 
+import com.junar.searchpharma.dao.RegionDao;
+import com.junar.searchpharma.dao.CommuneDao;
 import com.junar.searchpharma.dao.PharmacyDao;
 import com.junar.searchpharma.dao.ComplaintDao;
 
@@ -24,9 +28,13 @@ import com.junar.searchpharma.dao.ComplaintDao;
  */
 public class DaoSession extends AbstractDaoSession {
 
+    private final DaoConfig regionDaoConfig;
+    private final DaoConfig communeDaoConfig;
     private final DaoConfig pharmacyDaoConfig;
     private final DaoConfig complaintDaoConfig;
 
+    private final RegionDao regionDao;
+    private final CommuneDao communeDao;
     private final PharmacyDao pharmacyDao;
     private final ComplaintDao complaintDao;
 
@@ -34,22 +42,42 @@ public class DaoSession extends AbstractDaoSession {
             daoConfigMap) {
         super(db);
 
+        regionDaoConfig = daoConfigMap.get(RegionDao.class).clone();
+        regionDaoConfig.initIdentityScope(type);
+
+        communeDaoConfig = daoConfigMap.get(CommuneDao.class).clone();
+        communeDaoConfig.initIdentityScope(type);
+
         pharmacyDaoConfig = daoConfigMap.get(PharmacyDao.class).clone();
         pharmacyDaoConfig.initIdentityScope(type);
 
         complaintDaoConfig = daoConfigMap.get(ComplaintDao.class).clone();
         complaintDaoConfig.initIdentityScope(type);
 
+        regionDao = new RegionDao(regionDaoConfig, this);
+        communeDao = new CommuneDao(communeDaoConfig, this);
         pharmacyDao = new PharmacyDao(pharmacyDaoConfig, this);
         complaintDao = new ComplaintDao(complaintDaoConfig, this);
 
+        registerDao(Region.class, regionDao);
+        registerDao(Commune.class, communeDao);
         registerDao(Pharmacy.class, pharmacyDao);
         registerDao(Complaint.class, complaintDao);
     }
     
     public void clear() {
+        regionDaoConfig.getIdentityScope().clear();
+        communeDaoConfig.getIdentityScope().clear();
         pharmacyDaoConfig.getIdentityScope().clear();
         complaintDaoConfig.getIdentityScope().clear();
+    }
+
+    public RegionDao getRegionDao() {
+        return regionDao;
+    }
+
+    public CommuneDao getCommuneDao() {
+        return communeDao;
     }
 
     public PharmacyDao getPharmacyDao() {

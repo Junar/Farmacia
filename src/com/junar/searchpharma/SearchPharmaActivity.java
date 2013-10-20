@@ -2,6 +2,8 @@ package com.junar.searchpharma;
 
 import java.util.Locale;
 
+import com.junar.searchpharma.dao.JunarPharmacyDao;
+
 import android.app.ActionBar;
 import android.app.FragmentTransaction;
 import android.os.Bundle;
@@ -32,6 +34,8 @@ public class SearchPharmaActivity extends FragmentActivity implements ActionBar.
      * The {@link ViewPager} that will host the section contents.
      */
     ViewPager mViewPager;
+    
+    protected SearchPharmaController spController;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -73,6 +77,19 @@ public class SearchPharmaActivity extends FragmentActivity implements ActionBar.
         }
     }
 
+    public void onResume() {
+    	super.onResume();
+    	this.initController();
+    }
+    
+    private void initController() {
+    	try {
+    		spController = new SearchPharmaController(this);
+    	} catch (Exception e) {
+    		e.printStackTrace();
+    	}
+    }
+    
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
@@ -173,5 +190,5 @@ public class SearchPharmaActivity extends FragmentActivity implements ActionBar.
             return rootView;
         }
     }
-   
+       
 }
