@@ -10,17 +10,16 @@ import android.util.Log;
 
 import com.junar.api.JunarAPI;
 import com.junar.searchpharma.Commune;
+import com.junar.searchpharma.R;
 import com.junar.searchpharma.Region;
 import com.junar.searchpharma.SearchPharmaController;
 import com.junar.searchpharma.dao.DaoMaster.DevOpenHelper;
 
-import de.greenrobot.dao.AbstractDao;
-
 
 public class JunarPharmacyDao {
 	private String DATA_GUID = "LISTA-FARMA-DE-TURNO-2";
-	private SearchPharmaController spController;
 	
+	private Context context;
 	private DevOpenHelper helper;
 	private SQLiteDatabase db;
 	private DaoMaster daoMaster;
@@ -30,6 +29,7 @@ public class JunarPharmacyDao {
 	private CommuneDao communeDao;
 	
 	public JunarPharmacyDao(Context context) {		
+		this.context = context;
 		this.initDatabase(context);
 	}
 	
@@ -97,19 +97,26 @@ public class JunarPharmacyDao {
 		List<Commune> communeList = communeDao.queryBuilder().list();		
 		Iterator<Commune> it = communeList.iterator();
 		List<String> nameList = new ArrayList<String>();
-		
+		nameList.add(context.getString(R.string.commune_spinner_label));
 		while (it.hasNext()) {
 			Commune commune = it.next();
 			nameList.add(commune.getName());
 		}
 		
 		return nameList;
-	}		
+	}
+	
+	public List<String> getCommuneSpinnerLabel() {
+		List<String> nameList = new ArrayList<String>();
+		nameList.add(context.getString(R.string.commune_spinner_label));
+		return nameList;
+	}
 	
 	public List<String> getRegionForSpinner() {
 		List<Region> regionList = regionDao.queryBuilder().list();		
 		Iterator<Region> it = regionList.iterator();
 		List<String> nameList = new ArrayList<String>();
+		nameList.add(context.getString(R.string.region_spinner_label));
 		
 		while (it.hasNext()) {
 			Region region = it.next();

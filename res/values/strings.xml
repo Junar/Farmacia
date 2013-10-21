@@ -8,4 +8,6 @@
     <string name="title_section3">Más Info</string>
     
 	<string name="commune_text">Seleccione la región y comuna en la que desea buscar farmacias de turno:</string>
+	<string name="commune_spinner_label">Seleccione Comuna</string>
+	<string name="region_spinner_label">Seleccione Región</string>
 </resources>

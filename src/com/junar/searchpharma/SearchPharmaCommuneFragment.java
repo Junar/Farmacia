@@ -7,6 +7,8 @@ import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
+import android.widget.AdapterView.OnItemSelectedListener;
 import android.widget.ArrayAdapter;
 import android.widget.Spinner;
 
@@ -25,12 +27,27 @@ public class SearchPharmaCommuneFragment extends Fragment {
     			android.R.layout.simple_spinner_item, localDao.getRegionForSpinner());
     	
     	ArrayAdapter<String> adapterCommune = new ArrayAdapter<String>(getActivity(), 
-    			android.R.layout.simple_spinner_item, localDao.getCommuneForSpinner());
-    	
+    			android.R.layout.simple_spinner_item, localDao.getCommuneSpinnerLabel());
+    	    	
     	adapterRegion.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
     	adapterCommune.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+    	
     	spinnerRegion.setAdapter(adapterRegion);
     	spinnerCommune.setAdapter(adapterCommune);
+    	
+    	spinnerRegion.setOnItemSelectedListener(new OnItemSelectedListener() {    		
+			@Override
+			public void onItemSelected(AdapterView<?> arg0, View arg1,
+					int arg2, long arg3) {
+				// TODO Auto-generated method stub
+				
+			}
+
+			@Override
+			public void onNothingSelected(AdapterView<?> arg0) {
+				// TODO Auto-generated method stub				
+			}	
+    	});
     	
     	return rootView;        	
     }
