@@ -13,6 +13,7 @@ import com.junar.searchpharma.Commune;
 import com.junar.searchpharma.R;
 import com.junar.searchpharma.Region;
 import com.junar.searchpharma.SearchPharmaController;
+import com.junar.searchpharma.dao.CommuneDao.Properties;
 import com.junar.searchpharma.dao.DaoMaster.DevOpenHelper;
 
 
@@ -93,17 +94,17 @@ public class JunarPharmacyDao {
 		return this.daoSession.getCommuneDao();
 	}
 	
-	public List<String> getCommuneForSpinner() {
-		List<Commune> communeList = communeDao.queryBuilder().list();		
+	public List<Commune> getCommuneListByRegion(Region region) {
+		List<Commune> communeList = communeDao.queryBuilder().where(Properties.RegionCode.eq(region.getCode())).list();		
 		Iterator<Commune> it = communeList.iterator();
-		List<String> nameList = new ArrayList<String>();
-		nameList.add(context.getString(R.string.commune_spinner_label));
+		
+		List<Commune> returnList = new ArrayList<Commune>();		
 		while (it.hasNext()) {
 			Commune commune = it.next();
-			nameList.add(commune.getName());
+			returnList.add(commune);
 		}
 		
-		return nameList;
+		return returnList;
 	}
 	
 	public List<String> getCommuneSpinnerLabel() {
@@ -112,23 +113,21 @@ public class JunarPharmacyDao {
 		return nameList;
 	}
 	
-	public List<String> getRegionForSpinner() {
+	public List<Region> getRegionList() {
 		List<Region> regionList = regionDao.queryBuilder().list();		
 		Iterator<Region> it = regionList.iterator();
-		List<String> nameList = new ArrayList<String>();
-		nameList.add(context.getString(R.string.region_spinner_label));
+		List<Region> returnList = new ArrayList<Region>();
 		
-		while (it.hasNext()) {
+		// TODO: add header to spinner
+		// nameList.add(context.getString(R.string.region_spinner_label));
+		
+		while (it.hasNext()) {			
 			Region region = it.next();
-			nameList.add(region.getName());
-			Log.i("localdao", "name: ".concat(region.getName()).concat(" code:").concat(region.getCode().toString()));
+			returnList.add(region);
+			Log.i("localdao", "name: ".concat(region.toString()).concat(" code:").concat(region.getCode().toString()));
 		}
 		
-		return nameList;
-	}
-
-	public void queryByCommune() {
-		
+		return returnList;
 	}
 	
 	public void getDatastreamInfo() {
