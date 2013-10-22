@@ -3,6 +3,7 @@ package com.junar.searchpharma;
 import java.util.List;
 
 import com.junar.searchpharma.dao.JunarPharmacyDao;
+import com.junar.searchpharma.dao.LocalDao;
 
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -22,7 +23,7 @@ public class SearchPharmaCommuneFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
             Bundle savedInstanceState) {
     	
-    	JunarPharmacyDao localDao = ((SearchPharmaActivity) getActivity()).spController.getLocalDao();
+    	LocalDao localDao = ((SearchPharmaActivity) getActivity()).spController.getLocalDao();
     	View rootView = inflater.inflate(R.layout.fragment_commune, container, false);    	
     	
     	Spinner spinnerRegion = (Spinner) rootView.findViewById(R.id.spinner_region);
@@ -47,7 +48,7 @@ public class SearchPharmaCommuneFragment extends Fragment {
 												
 				Region region = (Region) parentView.getItemAtPosition(position);							
 				try {
-					JunarPharmacyDao localDao = ((SearchPharmaActivity) getActivity()).spController.getLocalDao();
+					LocalDao localDao = ((SearchPharmaActivity) getActivity()).spController.getLocalDao();
 					ArrayAdapter<Commune> adapterCommune = new ArrayAdapter<Commune>(getActivity(), 
 			    			android.R.layout.simple_spinner_item, localDao.getCommuneListByRegion(region));
 					spinnerCommune.setAdapter(adapterCommune);

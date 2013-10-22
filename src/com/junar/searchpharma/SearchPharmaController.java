@@ -6,20 +6,27 @@ import android.util.Log;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GooglePlayServicesUtil;
 import com.junar.searchpharma.dao.JunarPharmacyDao;
+import com.junar.searchpharma.dao.LocalDao;
 
 public class SearchPharmaController {
-	protected JunarPharmacyDao junarLocalDao;
+	protected JunarPharmacyDao junarDao;
+	protected LocalDao localDao;
 	private Context context;
 	
 	public SearchPharmaController(Context context) {
 		this.context = context;
-		junarLocalDao = new JunarPharmacyDao(context);	
+		junarDao = new JunarPharmacyDao(context);	
+		localDao = new LocalDao(context);
 		
 		this.isGooglePlayAvailable();
 	}
 
-	protected JunarPharmacyDao getLocalDao() {
-		return this.junarLocalDao;
+	protected JunarPharmacyDao getJunarDao() {
+		return this.junarDao;
+	}
+	
+	protected LocalDao getLocalDao() {
+		return this.localDao; 
 	}
 	
 	protected void isGooglePlayAvailable() {
