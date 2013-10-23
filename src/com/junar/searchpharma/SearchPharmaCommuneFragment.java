@@ -1,6 +1,5 @@
 package com.junar.searchpharma;
 
-import com.junar.searchpharma.dao.JunarPharmacyDao;
 import com.junar.searchpharma.dao.LocalDao;
 
 import android.os.Bundle;

@@ -2,8 +2,6 @@ package com.junar.searchpharma;
 
 import java.util.Locale;
 
-import com.junar.searchpharma.dao.JunarPharmacyDao;
-
 import android.app.ActionBar;
 import android.app.FragmentTransaction;
 import android.os.Bundle;
@@ -18,7 +16,6 @@ import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.TextView;
 
 public class SearchPharmaActivity extends FragmentActivity implements ActionBar.TabListener {
 
@@ -214,7 +211,7 @@ public class SearchPharmaActivity extends FragmentActivity implements ActionBar.
         @Override
         public View onCreateView(LayoutInflater inflater, ViewGroup container,
                 Bundle savedInstanceState) {
-            View rootView = inflater.inflate(R.layout.fragment_info, container, false);
+            View rootView = inflater.inflate(R.layout.complaint, container, false);
             return rootView;
         }
     }
