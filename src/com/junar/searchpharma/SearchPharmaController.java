@@ -20,8 +20,7 @@ public class SearchPharmaController {
 		junarDao = new JunarPharmacyDao(context);	
 		localDao = new LocalDao(context);
 		
-		this.isGooglePlayAvailable();
-		
+		this.isGooglePlayAvailable();		
 		this.initCache();
 	}
 
