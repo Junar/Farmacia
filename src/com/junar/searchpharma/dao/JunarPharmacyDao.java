@@ -69,10 +69,15 @@ public class JunarPharmacyDao {
 	
 	public Pharmacy getPharmacyFromJson(JSONArray json) throws JSONException {
 		Pharmacy pharma = new Pharmacy();
+		
+		// TODO: move to properties
 		pharma.setRegion(json.getString(0));
 		pharma.setCommune(json.getString(1));
 		pharma.setName(json.getString(2));
 		pharma.setAddress(json.getString(3));
+		pharma.setDay(json.getInt(4));
+		pharma.setMonth(json.getInt(5));
+		pharma.setComment(json.getString(6));
 		pharma.setLatitude(json.getLong(7));
 		pharma.setLongitude(json.getLong(8));
 		pharma.setPhone(json.getString(9));

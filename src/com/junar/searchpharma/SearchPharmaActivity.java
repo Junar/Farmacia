@@ -13,6 +13,7 @@ import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.View;
@@ -117,6 +118,28 @@ public class SearchPharmaActivity extends FragmentActivity implements ActionBar.
     @Override
     public void onTabReselected(ActionBar.Tab tab, FragmentTransaction fragmentTransaction) {
     }
+    
+    public void goButton(View v) {    	
+    	PharmaListFragment newFragment = new PharmaListFragment();
+    	Bundle argsFragment = new Bundle();
+    	argsFragment.putInt(PharmaListFragment.ARG_SECTION_NUMBER, 0);    	
+    	newFragment.setArguments(argsFragment);    	
+    	
+    	android.app.FragmentManager fm = getFragmentManager();    	
+    	FragmentTransaction fragmentTrx = fm.beginTransaction();
+    	    
+    	android.app.Fragment prev = fm.findFragmentById(R.id.fragment_commune);    	
+    	if (prev != null) {
+    		fragmentTrx.remove(prev);
+    		Log.d("goButton", "prev not null: " + newFragment.getTag());
+    	} else {
+    		Log.d("goButton", "tag null");
+    	}    	
+    	
+    	fragmentTrx.addToBackStack("communeBackFragment");
+    	fragmentTrx.replace(R.id.fragment_commune, newFragment);
+    	fragmentTrx.commit();    
+    }
 
     /**
      * A {@link FragmentPagerAdapter} that returns a fragment corresponding to
@@ -136,6 +159,7 @@ public class SearchPharmaActivity extends FragmentActivity implements ActionBar.
         	switch (position) {
         		case 0:
         			Fragment communeFragment = new SearchPharmaCommuneFragment();
+        			Log.d("fragmentGetItem", "tag fragment: " + communeFragment.getTag());
         			return communeFragment;
         			
         		case 1:
