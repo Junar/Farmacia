@@ -23,6 +23,7 @@ public class JunarAPI {
     private final String BASE_URI="http://apisandbox.junar.com";
     private final String DS_URI = "/datastreams/";
     private final String INVOKE_URI = DS_URI.concat("invoke/");
+    private String OUTPUT = "json_array";
     protected String lastResponse;
     
     public String getAuthKey() {
@@ -30,7 +31,8 @@ public class JunarAPI {
     }
     
     private String getURI(String guid, String action) {
-    	return this.BASE_URI.concat(action).concat(guid).concat("?auth_key=").concat(getAuthKey());
+    	// TODO: Remove limit
+    	return this.BASE_URI.concat(action).concat(guid).concat("?auth_key=").concat(getAuthKey()).concat(getOutputForUrl()).concat("&limit=10");
     }
     
     private String getURI(String guid, String action, String[] params) {
@@ -59,6 +61,14 @@ public class JunarAPI {
         
         return callURI(url);
     }
+    
+    public void setOutput(String type) {
+    	this.OUTPUT = type;
+    }
+    
+    public String getOutputForUrl() {
+    	return "&output=".concat(this.OUTPUT);
+    }
 
     private String callURI(String url) {
     	HttpClient httpClient = new DefaultHttpClient();
@@ -68,6 +78,7 @@ public class JunarAPI {
     		ResponseHandler<String> responseHandler = new BasicResponseHandler();
     		response = httpClient.execute(httpGet, responseHandler);    		
     	} catch (Exception e) {
+    		Log.d("callURI", "URL: " + url);
     		e.printStackTrace();
     	}    	
     	return response;    	

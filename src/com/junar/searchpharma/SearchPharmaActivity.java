@@ -43,7 +43,8 @@ public class SearchPharmaActivity extends FragmentActivity implements ActionBar.
         super.onCreate(savedInstanceState);               
         setContentView(R.layout.activity_main);
         
-        // TODO: Remove policy and move call to doInBackground() call
+        // TODO: Remove policy and move call to doInBackground() call. 
+        // Testing purposes only, not deploy to production
         StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
         StrictMode.setThreadPolicy(policy);
 
@@ -85,13 +86,6 @@ public class SearchPharmaActivity extends FragmentActivity implements ActionBar.
     public void onResume() {
     	super.onResume();
     	this.initController();
-    	this.initCache();
-    }
-    
-    private void initCache() {
-    	JunarPharmacyDao junarDao = new JunarPharmacyDao();
-    	
-    	junarDao.populateLocalCache();
     }
     
     private void initController() {

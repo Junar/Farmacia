@@ -28,10 +28,13 @@ public class PharmacyDao extends AbstractDao<Pharmacy, Long> {
         public final static Property Region = new Property(2, String.class, "region", false, "REGION");
         public final static Property Commune = new Property(3, String.class, "commune", false, "COMMUNE");
         public final static Property Address = new Property(4, String.class, "address", false, "ADDRESS");
-        public final static Property Phone = new Property(5, String.class, "phone", false, "PHONE");
-        public final static Property Latitude = new Property(6, Long.class, "latitude", false, "LATITUDE");
-        public final static Property Longitude = new Property(7, Long.class, "longitude", false, "LONGITUDE");
-        public final static Property Photo = new Property(8, String.class, "photo", false, "PHOTO");
+        public final static Property Day = new Property(5, Integer.class, "day", false, "DAY");
+        public final static Property Month = new Property(6, Integer.class, "month", false, "MONTH");
+        public final static Property Phone = new Property(7, String.class, "phone", false, "PHONE");
+        public final static Property Latitude = new Property(8, Long.class, "latitude", false, "LATITUDE");
+        public final static Property Longitude = new Property(9, Long.class, "longitude", false, "LONGITUDE");
+        public final static Property Photo = new Property(10, String.class, "photo", false, "PHOTO");
+        public final static Property Comment = new Property(11, String.class, "comment", false, "COMMENT");
     };
 
 
@@ -52,10 +55,13 @@ public class PharmacyDao extends AbstractDao<Pharmacy, Long> {
                 "'REGION' TEXT," + // 2: region
                 "'COMMUNE' TEXT," + // 3: commune
                 "'ADDRESS' TEXT," + // 4: address
-                "'PHONE' TEXT," + // 5: phone
-                "'LATITUDE' INTEGER," + // 6: latitude
-                "'LONGITUDE' INTEGER," + // 7: longitude
-                "'PHOTO' TEXT);"); // 8: photo
+                "'DAY' INTEGER," + // 5: day
+                "'MONTH' INTEGER," + // 6: month
+                "'PHONE' TEXT," + // 7: phone
+                "'LATITUDE' INTEGER," + // 8: latitude
+                "'LONGITUDE' INTEGER," + // 9: longitude
+                "'PHOTO' TEXT," + // 10: photo
+                "'COMMENT' TEXT);"); // 11: comment
     }
 
     /** Drops the underlying database table. */
@@ -94,24 +100,39 @@ public class PharmacyDao extends AbstractDao<Pharmacy, Long> {
             stmt.bindString(5, address);
         }
  
+        Integer day = entity.getDay();
+        if (day != null) {
+            stmt.bindLong(6, day);
+        }
+ 
+        Integer month = entity.getMonth();
+        if (month != null) {
+            stmt.bindLong(7, month);
+        }
+ 
         String phone = entity.getPhone();
         if (phone != null) {
-            stmt.bindString(6, phone);
+            stmt.bindString(8, phone);
         }
  
         Long latitude = entity.getLatitude();
         if (latitude != null) {
-            stmt.bindLong(7, latitude);
+            stmt.bindLong(9, latitude);
         }
  
         Long longitude = entity.getLongitude();
         if (longitude != null) {
-            stmt.bindLong(8, longitude);
+            stmt.bindLong(10, longitude);
         }
  
         String photo = entity.getPhoto();
         if (photo != null) {
-            stmt.bindString(9, photo);
+            stmt.bindString(11, photo);
+        }
+ 
+        String comment = entity.getComment();
+        if (comment != null) {
+            stmt.bindString(12, comment);
         }
     }
 
@@ -130,10 +151,13 @@ public class PharmacyDao extends AbstractDao<Pharmacy, Long> {
             cursor.isNull(offset + 2) ? null : cursor.getString(offset + 2), // region
             cursor.isNull(offset + 3) ? null : cursor.getString(offset + 3), // commune
             cursor.isNull(offset + 4) ? null : cursor.getString(offset + 4), // address
-            cursor.isNull(offset + 5) ? null : cursor.getString(offset + 5), // phone
-            cursor.isNull(offset + 6) ? null : cursor.getLong(offset + 6), // latitude
-            cursor.isNull(offset + 7) ? null : cursor.getLong(offset + 7), // longitude
-            cursor.isNull(offset + 8) ? null : cursor.getString(offset + 8) // photo
+            cursor.isNull(offset + 5) ? null : cursor.getInt(offset + 5), // day
+            cursor.isNull(offset + 6) ? null : cursor.getInt(offset + 6), // month
+            cursor.isNull(offset + 7) ? null : cursor.getString(offset + 7), // phone
+            cursor.isNull(offset + 8) ? null : cursor.getLong(offset + 8), // latitude
+            cursor.isNull(offset + 9) ? null : cursor.getLong(offset + 9), // longitude
+            cursor.isNull(offset + 10) ? null : cursor.getString(offset + 10), // photo
+            cursor.isNull(offset + 11) ? null : cursor.getString(offset + 11) // comment
         );
         return entity;
     }
@@ -146,10 +170,13 @@ public class PharmacyDao extends AbstractDao<Pharmacy, Long> {
         entity.setRegion(cursor.isNull(offset + 2) ? null : cursor.getString(offset + 2));
         entity.setCommune(cursor.isNull(offset + 3) ? null : cursor.getString(offset + 3));
         entity.setAddress(cursor.isNull(offset + 4) ? null : cursor.getString(offset + 4));
-        entity.setPhone(cursor.isNull(offset + 5) ? null : cursor.getString(offset + 5));
-        entity.setLatitude(cursor.isNull(offset + 6) ? null : cursor.getLong(offset + 6));
-        entity.setLongitude(cursor.isNull(offset + 7) ? null : cursor.getLong(offset + 7));
-        entity.setPhoto(cursor.isNull(offset + 8) ? null : cursor.getString(offset + 8));
+        entity.setDay(cursor.isNull(offset + 5) ? null : cursor.getInt(offset + 5));
+        entity.setMonth(cursor.isNull(offset + 6) ? null : cursor.getInt(offset + 6));
+        entity.setPhone(cursor.isNull(offset + 7) ? null : cursor.getString(offset + 7));
+        entity.setLatitude(cursor.isNull(offset + 8) ? null : cursor.getLong(offset + 8));
+        entity.setLongitude(cursor.isNull(offset + 9) ? null : cursor.getLong(offset + 9));
+        entity.setPhoto(cursor.isNull(offset + 10) ? null : cursor.getString(offset + 10));
+        entity.setComment(cursor.isNull(offset + 11) ? null : cursor.getString(offset + 11));
      }
     
     /** @inheritdoc */

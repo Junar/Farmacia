@@ -1,5 +1,7 @@
 package com.junar.searchpharma;
 
+import java.util.List;
+
 import android.content.Context;
 import android.util.Log;
 
@@ -19,6 +21,8 @@ public class SearchPharmaController {
 		localDao = new LocalDao(context);
 		
 		this.isGooglePlayAvailable();
+		
+		this.initCache();
 	}
 
 	protected JunarPharmacyDao getJunarDao() {
@@ -47,10 +51,25 @@ public class SearchPharmaController {
 		}
 		
 	}
+	
 	public void onSearchButtonClicked() {
 
 	}
 	
+    private void initCache() {
+    	if (localDao.isFirstPopulate()) {
+			String jsonArrayResponse = junarDao.invokeDatastream();
+			
+			List<Pharmacy> pharmaList = junarDao.parseJsonArrayResponse(jsonArrayResponse);
+			localDao.cachePharmaList(pharmaList);
+			localDao.addDatasetCacheControl();			
+			Log.d("initCache", "cache count:" + localDao.getCachePharmaCount());
+		} else {
+			Log.d("populateLocalCache", "Isnt first running, cache already filled up");
+		}
+    }
+	
+    // TODO: remember add day/month to search filter
 	public void onSearchByCommuneTabClicked() {
 		
 	}

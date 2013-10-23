@@ -14,10 +14,13 @@ public class Pharmacy {
     private String region;
     private String commune;
     private String address;
+    private Integer day;
+    private Integer month;
     private String phone;
     private Long latitude;
     private Long longitude;
     private String photo;
+    private String comment;
 
     // KEEP FIELDS - put your custom fields here
     // KEEP FIELDS END
@@ -29,16 +32,19 @@ public class Pharmacy {
         this.id = id;
     }
 
-    public Pharmacy(Long id, String name, String region, String commune, String address, String phone, Long latitude, Long longitude, String photo) {
+    public Pharmacy(Long id, String name, String region, String commune, String address, Integer day, Integer month, String phone, Long latitude, Long longitude, String photo, String comment) {
         this.id = id;
         this.name = name;
         this.region = region;
         this.commune = commune;
         this.address = address;
+        this.day = day;
+        this.month = month;
         this.phone = phone;
         this.latitude = latitude;
         this.longitude = longitude;
         this.photo = photo;
+        this.comment = comment;
     }
 
     public Long getId() {
@@ -81,6 +87,22 @@ public class Pharmacy {
         this.address = address;
     }
 
+    public Integer getDay() {
+        return day;
+    }
+
+    public void setDay(Integer day) {
+        this.day = day;
+    }
+
+    public Integer getMonth() {
+        return month;
+    }
+
+    public void setMonth(Integer month) {
+        this.month = month;
+    }
+
     public String getPhone() {
         return phone;
     }
@@ -111,6 +133,14 @@ public class Pharmacy {
 
     public void setPhoto(String photo) {
         this.photo = photo;
+    }
+
+    public String getComment() {
+        return comment;
+    }
+
+    public void setComment(String comment) {
+        this.comment = comment;
     }
 
     // KEEP METHODS - put your custom methods here

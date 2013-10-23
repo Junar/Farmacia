@@ -1,6 +1,8 @@
 package com.junar.searchpharma.dao;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Iterator;
 import java.util.List;
 
@@ -8,7 +10,9 @@ import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
 import android.util.Log;
 
+import com.junar.searchpharma.CacheControl;
 import com.junar.searchpharma.Commune;
+import com.junar.searchpharma.Pharmacy;
 import com.junar.searchpharma.R;
 import com.junar.searchpharma.Region;
 import com.junar.searchpharma.dao.CommuneDao.Properties;
@@ -23,6 +27,8 @@ public class LocalDao {
 	
 	private RegionDao regionDao;
 	private CommuneDao communeDao;
+	private CacheControlDao cacheControlDao;
+	private PharmacyDao pharmaDao;
 	
 	public LocalDao(Context context) {
 		this.context = context;
@@ -73,13 +79,18 @@ public class LocalDao {
 		daoSession = daoMaster.newSession();
 		
 		regionDao = getRegionDao();		
-		communeDao = getCommuneDao();
-		
+		communeDao = getCommuneDao();		
+		cacheControlDao = getCacheControlDao();
+		pharmaDao = getPharmaDao();
 		//this.bulkLoad();		
 	}
 	
 	protected DaoSession getDaoSession() {
 		return this.daoSession;
+	}
+	
+	protected CacheControlDao getCacheControlDao() {
+		return this.daoSession.getCacheControlDao();
 	}
 	
 	protected RegionDao getRegionDao() {
@@ -88,6 +99,10 @@ public class LocalDao {
 	
 	protected CommuneDao getCommuneDao() {
 		return this.daoSession.getCommuneDao();
+	}
+	
+	protected PharmacyDao getPharmaDao() {
+		return this.daoSession.getPharmacyDao();
 	}
 	
 	public List<Commune> getCommuneListByRegion(Region region) {
@@ -125,4 +140,25 @@ public class LocalDao {
 		
 		return returnList;
 	}	
+	
+	public void addDatasetCacheControl() {
+		CacheControl cacheControl = new CacheControl();		
+		Calendar c = Calendar.getInstance();
+		cacheControl.setLastUpdate(c.getTime());
+		
+		this.cacheControlDao.insert(cacheControl);
+	}
+	
+	public Boolean isFirstPopulate() {
+		long count = this.cacheControlDao.count();		
+		return (count==0)?true:false;
+	}
+	
+	public void cachePharmaList(List<Pharmacy> list) {	
+		this.pharmaDao.insertInTx(list);
+	}
+	
+	public long getCachePharmaCount() {
+		return this.pharmaDao.count();
+	}
 }
