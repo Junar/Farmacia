@@ -1,5 +1,18 @@
 package com.junar.api;
 
+import java.io.BufferedInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
+import java.net.URL;
+
+import org.apache.http.client.HttpClient;
+import org.apache.http.client.ResponseHandler;
+import org.apache.http.client.methods.HttpGet;
+import org.apache.http.impl.client.BasicResponseHandler;
+import org.apache.http.impl.client.DefaultHttpClient;
+
 import android.util.Log;
 
 import com.loopj.android.http.AsyncHttpClient;
@@ -10,14 +23,10 @@ public class JunarAPI {
     private final String BASE_URI="http://apisandbox.junar.com";
     private final String DS_URI = "/datastreams/";
     private final String INVOKE_URI = DS_URI.concat("invoke/");
+    protected String lastResponse;
     
     public String getAuthKey() {
         return this.APP_KEY;
-    }
-    
-    private void callURI(String url, AsyncHttpResponseHandler responseHandler) {
-    	AsyncHttpClient client = new AsyncHttpClient();
-    	client.get(url, responseHandler);    	
     }
     
     private String getURI(String guid, String action) {
@@ -25,60 +34,42 @@ public class JunarAPI {
     }
     
     private String getURI(String guid, String action, String[] params) {
-    	String local_url = getURI(guid, action);
+    	String localUri = getURI(guid, action);
     	
         for (int i=0; i < params.length; i++) {
-        	local_url = local_url.concat("&pArgument" + i + "=" + params[i]);
+        	localUri = localUri.concat("&pArgument" + i + "=" + params[i]);
         }
         
-    	return local_url;
+    	return localUri;
     }
-    
-    public void invoke(String guid, String[] params) {
+        
+    public String invoke(String guid, String[] params) {
     	String url = getURI(guid, INVOKE_URI);
     	
     	if (params != null && params.length > 0) {
         	url = getURI(guid, INVOKE_URI, params);
         }     
         
-        AsyncHttpResponseHandler responseHandler = new AsyncHttpResponseHandler() {
-        	public void onSuccess(String response) {
-        		
-        	}
-        	
-			@Override
-			public void onFailure(Throwable error, String content) {
-				Log.v("invoke", "onFailure Content " + content + ", Error " + error + ", Stack " + error.getMessage());
-				
-				if (error instanceof java.net.SocketTimeoutException) {
-					Log.v("invoke", "onFailure SocketTimeoutException, Retry to send");
-				}
-			}
-        };
-        
-        
-        callURI(url, responseHandler);    
+        return callURI(url);
         
     }
     
-    public void info(String guid) {        
-        String url = getURI(guid, this.DS_URI);
+    public String info(String guid) {        
+        String url = getURI(guid, this.DS_URI);        
         
-        AsyncHttpResponseHandler responseHandler = new AsyncHttpResponseHandler() {
-        	public void onSuccess(String response) {
-        		Log.v("info", response);
-        	}
-        	
-			@Override
-			public void onFailure(Throwable error, String content) {
-				Log.v("invoke", "onFailure Content " + content + ", Error " + error + ", Stack " + error.getMessage());
-				
-				if (error instanceof java.net.SocketTimeoutException) {
-					Log.v("invoke", "onFailure SocketTimeoutException, Retry to send");
-				}
-			}
-        };
-        
-        callURI(url, responseHandler);
+        return callURI(url);
+    }
+
+    private String callURI(String url) {
+    	HttpClient httpClient = new DefaultHttpClient();
+    	String response = null;
+    	try {
+    		HttpGet httpGet = new HttpGet(url);
+    		ResponseHandler<String> responseHandler = new BasicResponseHandler();
+    		response = httpClient.execute(httpGet, responseHandler);    		
+    	} catch (Exception e) {
+    		e.printStackTrace();
+    	}    	
+    	return response;    	
     }
 }

@@ -7,6 +7,7 @@ import com.junar.searchpharma.dao.JunarPharmacyDao;
 import android.app.ActionBar;
 import android.app.FragmentTransaction;
 import android.os.Bundle;
+import android.os.StrictMode;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
@@ -39,8 +40,12 @@ public class SearchPharmaActivity extends FragmentActivity implements ActionBar.
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
+        super.onCreate(savedInstanceState);               
         setContentView(R.layout.activity_main);
+        
+        // TODO: Remove policy and move call to doInBackground() call
+        StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
+        StrictMode.setThreadPolicy(policy);
 
         // Set up the action bar.
         final ActionBar actionBar = getActionBar();
@@ -80,6 +85,13 @@ public class SearchPharmaActivity extends FragmentActivity implements ActionBar.
     public void onResume() {
     	super.onResume();
     	this.initController();
+    	this.initCache();
+    }
+    
+    private void initCache() {
+    	JunarPharmacyDao junarDao = new JunarPharmacyDao();
+    	
+    	junarDao.populateLocalCache();
     }
     
     private void initController() {

@@ -1,7 +1,5 @@
 package com.junar.searchpharma;
 
-import java.util.List;
-
 import com.junar.searchpharma.dao.JunarPharmacyDao;
 import com.junar.searchpharma.dao.LocalDao;
 
