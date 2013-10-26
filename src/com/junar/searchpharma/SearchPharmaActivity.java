@@ -2,6 +2,9 @@ package com.junar.searchpharma;
 
 import java.util.Locale;
 
+import com.google.android.gms.maps.MapFragment;
+import com.google.android.gms.maps.SupportMapFragment;
+
 import android.app.ActionBar;
 import android.app.FragmentTransaction;
 import android.os.Bundle;
@@ -160,7 +163,7 @@ public class SearchPharmaActivity extends FragmentActivity implements ActionBar.
         			return communeFragment;
         			
         		case 1:
-        			Fragment closestFragment = new SearchPharmaClosestFragment();
+        			Fragment closestFragment = (SupportMapFragment) new SearchPharmaClosestFragment();
         			return closestFragment;
         			
         		default:
