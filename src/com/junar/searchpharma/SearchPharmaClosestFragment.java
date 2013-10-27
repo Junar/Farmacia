@@ -56,24 +56,37 @@ public class SearchPharmaClosestFragment extends SupportMapFragment implements L
 		super.onResume();
 		
 		googleMap = fragment.getMap();
-		
+						
+		this.addMarkers();		
+	}
+	
+	protected void addMarkers() {
+		this.addActualLocationMarker();
+		this.addSearchPharmaMarkers();
+	}
+	
+	protected void addActualLocationMarker() {
 		LatLng hereLatLng = getActualLatLng(this.context);		
 		if (hereLatLng != null) {
 			googleMap.addMarker(new MarkerOptions().position(hereLatLng).title("Ubicacion actual"));		    
 			googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(hereLatLng, 15));
 		}
-		
+	}
+	
+	protected void addSearchPharmaMarkers() {
 		List<MarkerOptions> markersList = this.getNearestPharma();
 		
 		if (markersList != null) {
 			Iterator<MarkerOptions> it = markersList.iterator();
-			while (it.hasNext()) {
+			while (it.hasNext()) {				
 				googleMap.addMarker(it.next());
 			}
+		} else {
+			Log.i("closest_fragment", "no aditional marker to add");
 		}
 	}
 	
-	public List<MarkerOptions> getNearestPharma() {
+	protected List<MarkerOptions> getNearestPharma() {
 		SearchPharmaController spController = ((SearchPharmaActivity) getActivity()).spController;
 		
 		return spController.filterNearestPharma(this.getActualLocation());		
