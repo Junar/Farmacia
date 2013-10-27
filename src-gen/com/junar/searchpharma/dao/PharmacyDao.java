@@ -62,6 +62,9 @@ public class PharmacyDao extends AbstractDao<Pharmacy, Long> {
                 "'LONGITUDE' INTEGER," + // 9: longitude
                 "'PHOTO' TEXT," + // 10: photo
                 "'COMMENT' TEXT);"); // 11: comment
+        // Add Indexes
+        db.execSQL("CREATE INDEX " + constraint + "IDX_PHARMACY_MONTH_DAY ON PHARMACY" +
+                " (MONTH,DAY);");
     }
 
     /** Drops the underlying database table. */

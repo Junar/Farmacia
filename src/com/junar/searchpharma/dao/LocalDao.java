@@ -8,6 +8,9 @@ import java.util.List;
 
 import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
+import android.location.Criteria;
+import android.location.Location;
+import android.location.LocationManager;
 import android.util.Log;
 
 import com.junar.searchpharma.CacheControl;
@@ -15,7 +18,7 @@ import com.junar.searchpharma.Commune;
 import com.junar.searchpharma.Pharmacy;
 import com.junar.searchpharma.R;
 import com.junar.searchpharma.Region;
-import com.junar.searchpharma.dao.CommuneDao.Properties;
+import com.junar.searchpharma.dao.CommuneDao;
 import com.junar.searchpharma.dao.DaoMaster.DevOpenHelper;
 
 public class LocalDao {
@@ -106,16 +109,8 @@ public class LocalDao {
 	}
 	
 	public List<Commune> getCommuneListByRegion(Region region) {
-		List<Commune> communeList = communeDao.queryBuilder().where(Properties.RegionCode.eq(region.getCode())).list();		
-		Iterator<Commune> it = communeList.iterator();
-		
-		List<Commune> returnList = new ArrayList<Commune>();		
-		while (it.hasNext()) {
-			Commune commune = it.next();
-			returnList.add(commune);
-		}
-		
-		return returnList;
+		return communeDao.queryBuilder().where(CommuneDao.Properties.RegionCode.eq(region.getCode())).list();		
+
 	}
 	
 	public List<String> getCommuneSpinnerLabel() {
@@ -161,4 +156,12 @@ public class LocalDao {
 	public long getCachePharmaCount() {
 		return this.pharmaDao.count();
 	}
+	    
+    public List<Pharmacy> getPharmaByDayMonth(int day, int month) {
+    	return this.pharmaDao.queryBuilder()
+    			.where(
+    					PharmacyDao.Properties.Month.eq(Integer.valueOf(month)), 
+    					PharmacyDao.Properties.Day.eq(Integer.valueOf(day))
+    			).list();    	
+    }
 }
