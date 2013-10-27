@@ -23,7 +23,7 @@ import com.junar.searchpharma.dao.LocalDao;
 public class SearchPharmaController {
 	private final String DATE_FORMAT_MONTH = "M";
 	private final String DATE_FORMAT_DAY = "d";
-	private final float MAX_RADIO_IN_METERS = 1000; 
+	private final float MAX_RADIO_IN_METERS = 55000; 
 	protected JunarPharmacyDao junarDao;
 	protected LocalDao localDao;
 	private Context context;
@@ -112,7 +112,7 @@ public class SearchPharmaController {
     	return markerList;
     }
     
-    public void filterNearestPharma(Location actualLocation) {  
+    public List<MarkerOptions> filterNearestPharma(Location actualLocation) {  
     	Log.i("nearest_pharma", "init");
     	//List<MarkerOptions> pharmaMarkers = this.getMarkersListForToday();
     	List<MarkerOptions> pharmaMarkers = this.getMarkersListForCommune("5109");
@@ -135,10 +135,12 @@ public class SearchPharmaController {
         	if (results[0] < this.MAX_RADIO_IN_METERS) {        		
         		Log.i("nearest_pharma", "pharma in radio, distance of " + results[0] + " meters");
         		markersInRadio.add(marker);
-        	} else {
+        	} /* else {
         		Log.i("nearest_pharma", "distance of " + results[0] + " is out of radio " + this.MAX_RADIO_IN_METERS);
-        	}
+        	}*/
     	}    	
+    	
+    	return markersInRadio;    	
     }
 		
 	public void onViewMapButtonClicked() {

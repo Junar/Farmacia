@@ -1,5 +1,8 @@
 package com.junar.searchpharma;
 
+import java.util.Iterator;
+import java.util.List;
+
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.SupportMapFragment;
@@ -56,17 +59,24 @@ public class SearchPharmaClosestFragment extends SupportMapFragment implements L
 		
 		LatLng hereLatLng = getActualLatLng(this.context);		
 		if (hereLatLng != null) {
-			Marker here = googleMap.addMarker(new MarkerOptions().position(hereLatLng).title("Ubicacion actual"));		    
+			googleMap.addMarker(new MarkerOptions().position(hereLatLng).title("Ubicacion actual"));		    
 			googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(hereLatLng, 15));
 		}
 		
-		this.getNearestPharma();
+		List<MarkerOptions> markersList = this.getNearestPharma();
+		
+		if (markersList != null) {
+			Iterator<MarkerOptions> it = markersList.iterator();
+			while (it.hasNext()) {
+				googleMap.addMarker(it.next());
+			}
+		}
 	}
 	
-	public void getNearestPharma() {
+	public List<MarkerOptions> getNearestPharma() {
 		SearchPharmaController spController = ((SearchPharmaActivity) getActivity()).spController;
 		
-		spController.filterNearestPharma(this.getActualLocation());
+		return spController.filterNearestPharma(this.getActualLocation());		
 	}
 	
 	public Location getActualLocation() {
