@@ -73,6 +73,10 @@ public class JunarPharmacyDao {
 		Pharmacy pharma = new Pharmacy();
 				
 		try {
+			/**
+			 * ["región","comuna","nombre farmacia","dirección","día","mes","horario atención","latitud","longitud","teléfono"],
+			 * ["2","2101","Cruz Verde 222","Arturo Pratt 640","1","7","DESDE 8:00 AM. HASTA LAS 8:00 DEL DÍA SIGUIENTE","-23.6491776","-70.3963394",""],
+			 */
 			// TODO: move to properties
 			pharma.setRegion(json.getString(0));
 			pharma.setCommune(json.getString(1));
@@ -86,8 +90,7 @@ public class JunarPharmacyDao {
 			pharma.setPhone(json.getString(9));			
 		} catch (JSONException je) {
 			return null;
-		}
-		
+		}		
 		return pharma;
 	}
 

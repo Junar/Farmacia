@@ -88,7 +88,8 @@ public class SearchPharmaController {
     }
         
     public List<MarkerOptions> getMarkersListForToday() {    	
-    	List<Pharmacy> pharmaList = localDao.getPharmaByDayMonth(this.getIntegerDate(DATE_FORMAT_MONTH), this.getIntegerDate(DATE_FORMAT_DAY));
+    	List<Pharmacy> pharmaList = localDao.getPharmaByMonthDay(this.getIntegerDate(DATE_FORMAT_MONTH), this.getIntegerDate(DATE_FORMAT_DAY));
+    	Log.i("pharma_commune", "cant de farmacias para mes " + this.getIntegerDate(DATE_FORMAT_MONTH) + " - dia " + this.getIntegerDate(DATE_FORMAT_DAY) + " :" + pharmaList.size());
     	return this.getMarkersListForPharmaList(pharmaList);
     }
     
@@ -114,8 +115,8 @@ public class SearchPharmaController {
     
     public List<MarkerOptions> filterNearestPharma(Location actualLocation) {  
     	Log.i("nearest_pharma", "init");
-    	//List<MarkerOptions> pharmaMarkers = this.getMarkersListForToday();
-    	List<MarkerOptions> pharmaMarkers = this.getMarkersListForCommune("5109");
+    	List<MarkerOptions> pharmaMarkers = this.getMarkersListForToday();
+    	//List<MarkerOptions> pharmaMarkers = this.getMarkersListForCommune("5109");
     	Iterator<MarkerOptions> it = pharmaMarkers.iterator();
     	List<MarkerOptions> markersInRadio = new ArrayList<MarkerOptions>();
     	
@@ -133,13 +134,14 @@ public class SearchPharmaController {
         			results);
         	
         	if (results[0] < this.MAX_RADIO_IN_METERS) {        		
-        		Log.i("nearest_pharma", "pharma in radio, distance of " + results[0] + " meters");
+        		//Log.i("nearest_pharma", "pharma in radio, distance of " + results[0] + " meters");
         		markersInRadio.add(marker);
         	} /* else {
         		Log.i("nearest_pharma", "distance of " + results[0] + " is out of radio " + this.MAX_RADIO_IN_METERS);
         	}*/
     	}    	
     	
+    	Log.i("nearest_pharma", "returning " + markersInRadio.size() + " markers in radio");    	
     	return markersInRadio;    	
     }
 		

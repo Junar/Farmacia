@@ -143,7 +143,7 @@ public class LocalDao {
 		return this.pharmaDao.count();
 	}
 	    
-    public List<Pharmacy> getPharmaByDayMonth(Integer day, Integer month) {
+    public List<Pharmacy> getPharmaByMonthDay(Integer month, Integer day) {
     	QueryBuilder.LOG_SQL = true;
     	QueryBuilder.LOG_VALUES = true;
     	return this.pharmaDao.queryBuilder().where(
@@ -153,8 +153,6 @@ public class LocalDao {
     }
     
     public List<Pharmacy> getPharmaByCommune(String commune) {
-    	QueryBuilder.LOG_SQL = true;
-    	QueryBuilder.LOG_VALUES = true;
     	return this.pharmaDao.queryBuilder().where(PharmacyDao.Properties.Commune.eq(commune)).list();
     }
 }
