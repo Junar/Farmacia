@@ -1,6 +1,5 @@
 package com.junar.searchpharma.dao;
 
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Iterator;
@@ -8,9 +7,6 @@ import java.util.List;
 
 import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
-import android.location.Criteria;
-import android.location.Location;
-import android.location.LocationManager;
 import android.util.Log;
 
 import com.junar.searchpharma.CacheControl;
@@ -20,6 +16,8 @@ import com.junar.searchpharma.R;
 import com.junar.searchpharma.Region;
 import com.junar.searchpharma.dao.CommuneDao;
 import com.junar.searchpharma.dao.DaoMaster.DevOpenHelper;
+
+import de.greenrobot.dao.query.QueryBuilder;
 
 public class LocalDao {
 	private Context context;
@@ -85,7 +83,8 @@ public class LocalDao {
 		communeDao = getCommuneDao();		
 		cacheControlDao = getCacheControlDao();
 		pharmaDao = getPharmaDao();
-		//this.bulkLoad();		
+		//this.bulkLoad();				
+		Log.i("cache_pharma", "total farmacias en cache:" + this.getCachePharmaCount());
 	}
 	
 	protected DaoSession getDaoSession() {
@@ -120,20 +119,7 @@ public class LocalDao {
 	}
 	
 	public List<Region> getRegionList() {
-		List<Region> regionList = regionDao.queryBuilder().list();		
-		Iterator<Region> it = regionList.iterator();
-		List<Region> returnList = new ArrayList<Region>();
-		
-		// TODO: add header to spinner
-		// nameList.add(context.getString(R.string.region_spinner_label));
-		
-		while (it.hasNext()) {			
-			Region region = it.next();
-			returnList.add(region);
-			Log.i("localdao", "name: ".concat(region.toString()).concat(" code:").concat(region.getCode().toString()));
-		}
-		
-		return returnList;
+		return regionDao.queryBuilder().list();
 	}	
 	
 	public void addDatasetCacheControl() {
@@ -157,11 +143,18 @@ public class LocalDao {
 		return this.pharmaDao.count();
 	}
 	    
-    public List<Pharmacy> getPharmaByDayMonth(int day, int month) {
-    	return this.pharmaDao.queryBuilder()
-    			.where(
-    					PharmacyDao.Properties.Month.eq(Integer.valueOf(month)), 
-    					PharmacyDao.Properties.Day.eq(Integer.valueOf(day))
-    			).list();    	
+    public List<Pharmacy> getPharmaByDayMonth(Integer day, Integer month) {
+    	QueryBuilder.LOG_SQL = true;
+    	QueryBuilder.LOG_VALUES = true;
+    	return this.pharmaDao.queryBuilder().where(
+    					PharmacyDao.Properties.Month.eq(month), 
+    					PharmacyDao.Properties.Day.eq(day)
+    			).list();    
+    }
+    
+    public List<Pharmacy> getPharmaByCommune(String commune) {
+    	QueryBuilder.LOG_SQL = true;
+    	QueryBuilder.LOG_VALUES = true;
+    	return this.pharmaDao.queryBuilder().where(PharmacyDao.Properties.Commune.eq(commune)).list();
     }
 }

@@ -7,6 +7,7 @@ import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.junar.searchpharma.dao.LocalDao;
 
 import android.content.Context;
 import android.location.Criteria;
@@ -28,9 +29,8 @@ public class SearchPharmaClosestFragment extends SupportMapFragment implements L
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 		super.onCreateView(inflater, container, savedInstanceState);		
-		this.context = container.getContext();
-		
-		 locationManager = (LocationManager) context.getSystemService(Context.LOCATION_SERVICE);
+		this.context = container.getContext();		
+		locationManager = (LocationManager) context.getSystemService(Context.LOCATION_SERVICE);
 		
 		return inflater.inflate(R.layout.fragment_closest, container, false);
 	}
@@ -54,27 +54,34 @@ public class SearchPharmaClosestFragment extends SupportMapFragment implements L
 		
 		googleMap = fragment.getMap();
 		
-		LatLng hereLatLng = getActualLocation(this.context);
-		
+		LatLng hereLatLng = getActualLatLng(this.context);		
 		if (hereLatLng != null) {
 			Marker here = googleMap.addMarker(new MarkerOptions().position(hereLatLng).title("Ubicacion actual"));		    
 			googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(hereLatLng, 15));
 		}
+		
+		this.getNearestPharma();
 	}
 	
-	public LatLng getActualLocation(Context context) {			    	   
-	    Criteria criteria = new Criteria();	    
+	public void getNearestPharma() {
+		SearchPharmaController spController = ((SearchPharmaActivity) getActivity()).spController;
+		
+		spController.filterNearestPharma(this.getActualLocation());
+	}
+	
+	public Location getActualLocation() {
+		Criteria criteria = new Criteria();	    
 	    String provider = locationManager.getBestProvider(criteria, false);	    
 	    locationManager.requestLocationUpdates(provider, 400, 1, (android.location.LocationListener) this);
 	    
-	    Location location = locationManager.getLastKnownLocation(provider);
-	    	    	    
+	    return locationManager.getLastKnownLocation(provider);
+	}
+	
+	public LatLng getActualLatLng(Context context) {			    	   	    
+	    Location location = this.getActualLocation();	    	    	    
 	    LatLng hereLatLng = null;	    
 	    if (location != null) {
-	    	Log.d("getActualLocation", "Provider " + provider + " has been selected.");
 	    	hereLatLng = new LatLng(location.getLatitude(), location.getLongitude());
-	    } else {
-	    	Log.d("getActualLocation", "location not available provider:" + provider);
 	    }
 	    	    	    
 	    return hereLatLng;

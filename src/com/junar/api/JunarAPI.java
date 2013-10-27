@@ -32,7 +32,7 @@ public class JunarAPI {
     
     private String getURI(String guid, String action) {
     	// TODO: Remove limit
-    	return this.BASE_URI.concat(action).concat(guid).concat("?auth_key=").concat(getAuthKey()).concat(getOutputForUrl()).concat("&limit=10");
+    	return this.BASE_URI.concat(action).concat(guid).concat("?auth_key=").concat(getAuthKey()).concat(getOutputForUrl());
     }
     
     private String getURI(String guid, String action, String[] params) {

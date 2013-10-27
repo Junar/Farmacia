@@ -8,6 +8,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import android.content.Context;
+import android.util.Log;
 
 import com.junar.api.JunarAPI;
 import com.junar.searchpharma.Pharmacy;
@@ -57,7 +58,9 @@ public class JunarPharmacyDao {
 			for (int i=1; i < resultArray.length(); i++) {
 				JSONArray columnArray = resultArray.getJSONArray(i);
 				Pharmacy pharma = this.getPharmacyFromJson(columnArray);
-				pharmaList.add(pharma);
+				if (pharma != null) {
+					pharmaList.add(pharma);
+				}				
 			}						
 		} catch (JSONException e) {
 			e.printStackTrace();
@@ -66,21 +69,29 @@ public class JunarPharmacyDao {
 		return pharmaList;
 	}
 	
-	public Pharmacy getPharmacyFromJson(JSONArray json) throws JSONException {
+	public Pharmacy getPharmacyFromJson(JSONArray json) {
 		Pharmacy pharma = new Pharmacy();
-		
-		// TODO: move to properties
-		pharma.setRegion(json.getString(0));
-		pharma.setCommune(json.getString(1));
-		pharma.setName(json.getString(2));
-		pharma.setAddress(json.getString(3));
-		pharma.setDay(json.getInt(4));
-		pharma.setMonth(json.getInt(5));
-		pharma.setComment(json.getString(6));
-		pharma.setLatitude(json.getLong(7));
-		pharma.setLongitude(json.getLong(8));
-		pharma.setPhone(json.getString(9));
+				
+		try {
+			// TODO: move to properties
+			pharma.setRegion(json.getString(0));
+			pharma.setCommune(json.getString(1));
+			pharma.setName(json.getString(2));
+			pharma.setAddress(json.getString(3));
+			pharma.setDay(json.getInt(4));
+			pharma.setMonth(json.getInt(5));
+			pharma.setComment(json.getString(6));
+			pharma.setLatitude(json.getLong(7));
+			pharma.setLongitude(json.getLong(8));
+			pharma.setPhone(json.getString(9));			
+		} catch (JSONException je) {
+			return null;
+		}
 		
 		return pharma;
 	}
+
+    public void getMarkersForPharmas(List<Pharmacy> pharmaList) {
+    	
+    }
 }
