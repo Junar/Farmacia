@@ -14,6 +14,7 @@ import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GooglePlayServicesUtil;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
+import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
@@ -63,11 +64,7 @@ public class SearchPharmaController {
 		}
 		
 	}
-	
-	public void onSearchButtonClicked() {
-
-	}
-	
+		
     private void initCache() {
     	if (localDao.isFirstPopulate()) {
 			String jsonArrayResponse = junarDao.invokeDatastream();
@@ -102,11 +99,17 @@ public class SearchPharmaController {
     
     public List<MarkerOptions> getMarkersListForPharmaList(List<Pharmacy> pharmaList) {
     	List<MarkerOptions> markerList = new ArrayList<MarkerOptions>();
-    	Iterator<Pharmacy> it = pharmaList.iterator();
+    	Iterator<Pharmacy> it = pharmaList.iterator();    	
+    	
     	while(it.hasNext()) {
-    		Pharmacy pharma = it.next();
-    		LatLng pharaLatLng = new LatLng(pharma.getLatitude(), pharma.getLongitude());
-    		MarkerOptions marker = new MarkerOptions().position(pharaLatLng).title(pharma.getName());    		    		
+    		Pharmacy pharma = it.next();    		    		
+    		
+    		MarkerOptions marker = new MarkerOptions()
+    			.position(new LatLng(pharma.getLatitude(), pharma.getLongitude()))
+    			.title(pharma.getName())
+    			.snippet(pharma.toString())
+    			.icon(BitmapDescriptorFactory.fromResource(R.drawable.ico_ifarmacias_15));
+    		
     		markerList.add(marker);
     	}
     	
@@ -120,29 +123,34 @@ public class SearchPharmaController {
     	Iterator<MarkerOptions> it = pharmaMarkers.iterator();
     	List<MarkerOptions> markersInRadio = new ArrayList<MarkerOptions>();
     	
-    	while (it.hasNext()) {
-        	MarkerOptions marker = it.next();   
-        	/**
-        	 * The computed distance is stored in results[0]. 
-        	 * If results has length 2 or greater, the initial bearing is stored in results[1]. 
-        	 * If results has length 3 or greater, the final bearing is stored in results[2].
-        	 */
-        	float[] results = new float[1];        	
-        	Location.distanceBetween(
-        			actualLocation.getLatitude(), actualLocation.getLongitude(), 
-        			marker.getPosition().latitude, marker.getPosition().longitude, 
-        			results);
+    	try {
+    		while (it.hasNext()) {
+            	MarkerOptions marker = it.next();   
+            	/**
+            	 * The computed distance is stored in results[0]. 
+            	 * If results has length 2 or greater, the initial bearing is stored in results[1]. 
+            	 * If results has length 3 or greater, the final bearing is stored in results[2].
+            	 */
+            	float[] results = new float[1];        	
+            	Location.distanceBetween(
+            			actualLocation.getLatitude(), actualLocation.getLongitude(), 
+            			marker.getPosition().latitude, marker.getPosition().longitude, 
+            			results);
+            	
+            	if (results[0] < this.MAX_RADIO_IN_METERS) {        		
+            		//Log.i("nearest_pharma", "pharma in radio, distance of " + results[0] + " meters");
+            		markersInRadio.add(marker);
+            	} /* else {
+            		Log.i("nearest_pharma", "distance of " + results[0] + " is out of radio " + this.MAX_RADIO_IN_METERS);
+            	}*/
+        	}    	
         	
-        	if (results[0] < this.MAX_RADIO_IN_METERS) {        		
-        		//Log.i("nearest_pharma", "pharma in radio, distance of " + results[0] + " meters");
-        		markersInRadio.add(marker);
-        	} /* else {
-        		Log.i("nearest_pharma", "distance of " + results[0] + " is out of radio " + this.MAX_RADIO_IN_METERS);
-        	}*/
+        	Log.i("nearest_pharma", "returning " + markersInRadio.size() + " markers in radio");    	
+        	return markersInRadio;    	
+    	} catch (Exception e) {
+    		Log.d("filterNearestPharma", "msg: " + e.getMessage());
+    		return null;
     	}    	
-    	
-    	Log.i("nearest_pharma", "returning " + markersInRadio.size() + " markers in radio");    	
-    	return markersInRadio;    	
     }
 		
 	public void onViewMapButtonClicked() {

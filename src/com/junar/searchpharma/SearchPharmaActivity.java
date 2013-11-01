@@ -1,5 +1,6 @@
 package com.junar.searchpharma;
 
+import java.util.HashMap;
 import java.util.Locale;
 
 import com.google.android.gms.maps.MapFragment;
@@ -31,6 +32,7 @@ public class SearchPharmaActivity extends FragmentActivity implements ActionBar.
      * {@link android.support.v4.app.FragmentStatePagerAdapter}.
      */
     SectionsPagerAdapter mSectionsPagerAdapter;
+    HashMap<Integer,Fragment> mPageReferenceMap;
 
     /**
      * The {@link ViewPager} that will host the section contents.
@@ -38,7 +40,8 @@ public class SearchPharmaActivity extends FragmentActivity implements ActionBar.
     ViewPager mViewPager;
     
     protected SearchPharmaController spController;
-
+    protected Fragment fragmentCommunes;
+    
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);               
@@ -119,26 +122,26 @@ public class SearchPharmaActivity extends FragmentActivity implements ActionBar.
     public void onTabReselected(ActionBar.Tab tab, FragmentTransaction fragmentTransaction) {
     }
     
-    public void goButton(View v) {    	
-    	PharmaListFragment newFragment = new PharmaListFragment();
-    	Bundle argsFragment = new Bundle();
-    	argsFragment.putInt(PharmaListFragment.ARG_SECTION_NUMBER, 0);    	
-    	newFragment.setArguments(argsFragment);    	
-    	
-    	android.app.FragmentManager fm = getFragmentManager();    	
-    	FragmentTransaction fragmentTrx = fm.beginTransaction();
-    	    
-    	android.app.Fragment prev = fm.findFragmentById(R.id.fragment_commune);    	
-    	if (prev != null) {
-    		fragmentTrx.remove(prev);
-    		Log.d("goButton", "prev not null: " + newFragment.getTag());
-    	} else {
-    		Log.d("goButton", "tag null");
-    	}    	
-    	
-    	fragmentTrx.addToBackStack("communeBackFragment");
-    	fragmentTrx.replace(R.id.fragment_commune, newFragment);
-    	fragmentTrx.commit();    
+    public void goButton(View v) {    	    	    	
+    	FragmentManager fm = getSupportFragmentManager();
+    	Fragment pharmaListFragment = new PharmaListFragment();
+    }
+    
+    // This the important bit to make sure the back button works when you're nesting fragments. 
+    // Very hacky, all it takes is some Google engineer to change that ViewPager view tag to break 
+    // this in a future Android update.
+    @Override
+    public void onBackPressed() {
+        Fragment fragment = (Fragment) getSupportFragmentManager().findFragmentByTag("android:switcher:" + R.id.pager + ":"+ mViewPager.getCurrentItem());
+        if (fragment != null) // could be null if not instantiated yet
+        {
+            if (fragment.getView() != null) {
+                // Pop the backstack on the ChildManager if there is any. If not, close this activity as normal.
+                if (!fragment.getChildFragmentManager().popBackStackImmediate()) {
+                    finish();
+                }
+            }
+        }
     }
 
     /**
@@ -158,12 +161,13 @@ public class SearchPharmaActivity extends FragmentActivity implements ActionBar.
             // below) with the page number as its lone argument.        	
         	switch (position) {
         		case 0:
-        			Fragment communeFragment = new SearchPharmaCommuneFragment();
-        			Log.d("fragmentGetItem", "tag fragment: " + communeFragment.getTag());
+        			Fragment communeFragment = new SearchPharmaCommuneFragment();      
+
         			return communeFragment;
         			
         		case 1:
         			Fragment closestFragment = (SupportMapFragment) new SearchPharmaClosestFragment();
+
         			return closestFragment;
         			
         		default:
@@ -171,6 +175,7 @@ public class SearchPharmaActivity extends FragmentActivity implements ActionBar.
                     Bundle dummyArgs = new Bundle();
                     dummyArgs.putInt(DummySectionFragment.ARG_SECTION_NUMBER, position + 15);
                     dummyFragment.setArguments(dummyArgs);
+
                     return dummyFragment;
         	}
             

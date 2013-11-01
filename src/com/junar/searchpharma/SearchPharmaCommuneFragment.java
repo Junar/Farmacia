@@ -4,6 +4,7 @@ import com.junar.searchpharma.dao.LocalDao;
 
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -11,10 +12,12 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemSelectedListener;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
 import android.widget.Spinner;
 
 public class SearchPharmaCommuneFragment extends Fragment {
 	Spinner spinnerCommune;
+	FragmentManager fragmentManager;
 	
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -23,6 +26,8 @@ public class SearchPharmaCommuneFragment extends Fragment {
     	LocalDao localDao = ((SearchPharmaActivity) getActivity()).spController.getLocalDao();
     	View rootView = inflater.inflate(R.layout.fragment_commune, container, false);    	
     	
+    	
+    	// Spinners
     	Spinner spinnerRegion = (Spinner) rootView.findViewById(R.id.spinner_region);
     	spinnerCommune = (Spinner) rootView.findViewById(R.id.spinner_commune);
     	    	
@@ -58,6 +63,21 @@ public class SearchPharmaCommuneFragment extends Fragment {
 			public void onNothingSelected(AdapterView<?> arg0) {
 				// TODO Auto-generated method stub				
 			}	
+    	});
+    	
+    	// Button
+    	Button searchButton = (Button) rootView.findViewById(R.id.commune_search_button);
+    	
+    	searchButton.setOnClickListener(new View.OnClickListener() {
+    		public void onClick(View v) {
+    			// it was the 1st button
+    			fragmentManager = getFragmentManager();
+    			Fragment srcFragment = fragmentManager.findFragmentByTag("android:switcher:" + R.id.pager + ":0");
+    			Fragment dstFragment = new PharmaListFragment();
+    			fragmentManager.beginTransaction().replace(srcFragment.getId(), dstFragment).addToBackStack("android:switcher:" + R.id.pager + ":0") .commit();
+    			fragmentManager.executePendingTransactions();
+    			
+    		}
     	});
     	
     	return rootView;        	

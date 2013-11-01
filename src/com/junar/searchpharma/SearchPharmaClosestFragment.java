@@ -29,6 +29,7 @@ public class SearchPharmaClosestFragment extends SupportMapFragment implements L
 	private SupportMapFragment fragment;
 	private Context context;
 	private LocationManager locationManager;
+	
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 		super.onCreateView(inflater, container, savedInstanceState);		
@@ -43,26 +44,23 @@ public class SearchPharmaClosestFragment extends SupportMapFragment implements L
 		super.onActivityCreated(savedInstanceState);
 		FragmentManager fm = getChildFragmentManager();
 		fragment = (SupportMapFragment) fm.findFragmentById(R.id.map);
+		
 		if (fragment == null) {
-			Log.d("onActivityCreated", "fragmento nulo");
 			fragment = SupportMapFragment.newInstance();
 			fm.beginTransaction().replace(R.id.map, fragment).commit();
-		} else {
-			Log.d("onActivityCreated", "fragmento NO nulo");
 		}	
 	}
 	
 	public void onResume() {
 		super.onResume();
 		
-		googleMap = fragment.getMap();
-						
+		googleMap = fragment.getMap();						
 		this.addMarkers();		
 	}
 	
 	protected void addMarkers() {
 		this.addActualLocationMarker();
-		this.addSearchPharmaMarkers();
+		this.addPharmaMarkers();
 	}
 	
 	protected void addActualLocationMarker() {
@@ -73,8 +71,9 @@ public class SearchPharmaClosestFragment extends SupportMapFragment implements L
 		}
 	}
 	
-	protected void addSearchPharmaMarkers() {
-		List<MarkerOptions> markersList = this.getNearestPharma();
+	protected void addPharmaMarkers() {
+		//List<MarkerOptions> markersList = this.getNearestPharma();
+		List<MarkerOptions> markersList = this.getTodayPharmas();
 		
 		if (markersList != null) {
 			Iterator<MarkerOptions> it = markersList.iterator();
@@ -90,6 +89,12 @@ public class SearchPharmaClosestFragment extends SupportMapFragment implements L
 		SearchPharmaController spController = ((SearchPharmaActivity) getActivity()).spController;
 		
 		return spController.filterNearestPharma(this.getActualLocation());		
+	}
+	
+	protected List<MarkerOptions> getTodayPharmas() {
+		SearchPharmaController spController = ((SearchPharmaActivity) getActivity()).spController;
+		
+		return spController.getMarkersListForToday();
 	}
 	
 	public Location getActualLocation() {

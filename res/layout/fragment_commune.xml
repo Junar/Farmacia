@@ -39,13 +39,12 @@
         android:text="@string/commune_text" />
 
     <Button
-        android:id="@+id/button1"
+        android:id="@+id/commune_search_button"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_below="@+id/spinner_commune"
         android:layout_centerHorizontal="true"
         android:layout_marginTop="37dp"
-        android:text="Go!"
-        android:onClick="goButton" />
+        android:text="Buscar"/>
 
 </RelativeLayout>
