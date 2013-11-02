@@ -75,10 +75,12 @@ public class SearchPharmaCommuneFragment extends Fragment {
     			fragmentManager = getFragmentManager();
     			Fragment srcFragment = fragmentManager.findFragmentByTag("android:switcher:" + R.id.pager + ":0");
     			Fragment dstFragment = new PharmaListFragment();
-    			FragmentTransaction ft = fragmentManager.beginTransaction(); //.replace(srcFragment.getId(), dstFragment);
-    			ft.add(dstFragment, "listfragment:tag");
+    			FragmentTransaction ft = fragmentManager.beginTransaction();
+    			ft.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN);
+    			//ft.replace(srcFragment.getId(), dstFragment, "listfragment:tag");
     			ft.hide(srcFragment);
-    			ft.show(dstFragment);
+    			ft.add(R.id.fragment_commune, dstFragment, "listfragment:tag");    			
+    			ft.show(dstFragment);    			
     			ft.addToBackStack(null);
     			ft.commit();    			
     		}
