@@ -5,6 +5,7 @@ import com.junar.searchpharma.dao.LocalDao;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentTransaction;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -74,9 +75,12 @@ public class SearchPharmaCommuneFragment extends Fragment {
     			fragmentManager = getFragmentManager();
     			Fragment srcFragment = fragmentManager.findFragmentByTag("android:switcher:" + R.id.pager + ":0");
     			Fragment dstFragment = new PharmaListFragment();
-    			fragmentManager.beginTransaction().replace(srcFragment.getId(), dstFragment).addToBackStack("android:switcher:" + R.id.pager + ":0") .commit();
-    			fragmentManager.executePendingTransactions();
-    			
+    			FragmentTransaction ft = fragmentManager.beginTransaction(); //.replace(srcFragment.getId(), dstFragment);
+    			ft.add(dstFragment, "listfragment:tag");
+    			ft.hide(srcFragment);
+    			ft.show(dstFragment);
+    			ft.addToBackStack(null);
+    			ft.commit();    			
     		}
     	});
     	

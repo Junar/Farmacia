@@ -145,7 +145,7 @@ public class Pharmacy {
 
     // KEEP METHODS - put your custom methods here
     public String toString() {
-    	return this.getAddress().concat(" - ").concat(this.getPhone()).concat(",").concat(this.getCommune());
+    	return this.getAddress().concat(" - ").concat(this.getCommune()).concat("\n").concat(this.getComment());
     }
     // KEEP METHODS END
 

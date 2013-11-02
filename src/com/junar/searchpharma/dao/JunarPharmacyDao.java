@@ -58,9 +58,7 @@ public class JunarPharmacyDao {
 			for (int i=1; i < resultArray.length(); i++) {
 				JSONArray columnArray = resultArray.getJSONArray(i);
 				Pharmacy pharma = this.getPharmacyFromJson(columnArray);
-				if (pharma != null) {
-					pharmaList.add(pharma);
-				}				
+				pharmaList.add(pharma);				
 			}						
 		} catch (JSONException e) {
 			e.printStackTrace();
@@ -85,13 +83,24 @@ public class JunarPharmacyDao {
 			pharma.setDay(json.getInt(4));
 			pharma.setMonth(json.getInt(5));
 			pharma.setComment(json.getString(6));
-			pharma.setLatitude(json.getLong(7));
-			pharma.setLongitude(json.getLong(8));
-			pharma.setPhone(json.getString(9));			
+			pharma.setPhone(json.getString(9));
+			try {
+				pharma.setLatitude(json.getLong(7));
+				pharma.setLongitude(json.getLong(8));
+			} catch (JSONException jee) {
+				pharma.setLatitude(Long.valueOf(0));
+				pharma.setLongitude(Long.valueOf(0));
+			}			
+			Log.i("getPharmacyFromJson", "Pharmacy: ".concat(pharma.toString()));
+			return pharma;
 		} catch (JSONException je) {
+			try {
+				Log.i("getPharmacyFromJson", "Invalid JSON:".concat(json.toString(1)));
+			} catch (Exception e) {
+				Log.i("getPharmacyFromJson", "exception: ".concat(e.getMessage()));
+			}			
 			return null;
-		}		
-		return pharma;
+		}				
 	}
 
     public void getMarkersForPharmas(List<Pharmacy> pharmaList) {

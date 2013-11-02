@@ -123,25 +123,7 @@ public class SearchPharmaActivity extends FragmentActivity implements ActionBar.
     }
     
     public void goButton(View v) {    	    	    	
-    	FragmentManager fm = getSupportFragmentManager();
-    	Fragment pharmaListFragment = new PharmaListFragment();
-    }
-    
-    // This the important bit to make sure the back button works when you're nesting fragments. 
-    // Very hacky, all it takes is some Google engineer to change that ViewPager view tag to break 
-    // this in a future Android update.
-    @Override
-    public void onBackPressed() {
-        Fragment fragment = (Fragment) getSupportFragmentManager().findFragmentByTag("android:switcher:" + R.id.pager + ":"+ mViewPager.getCurrentItem());
-        if (fragment != null) // could be null if not instantiated yet
-        {
-            if (fragment.getView() != null) {
-                // Pop the backstack on the ChildManager if there is any. If not, close this activity as normal.
-                if (!fragment.getChildFragmentManager().popBackStackImmediate()) {
-                    finish();
-                }
-            }
-        }
+
     }
 
     /**
