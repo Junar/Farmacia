@@ -1,0 +1,145 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:orientation="horizontal"
+    android:padding="10dp" >
+
+    <LinearLayout
+        android:id="@+id/detailPharmacy"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:background="@drawable/background_card"
+        android:orientation="vertical"
+        android:padding="2.0dip"
+        android:visibility="visible" >
+
+        <TextView
+            android:id="@+id/pharma_name"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:layout_marginLeft="5.0dip"
+            android:text=""
+            android:textAppearance="?android:textAppearanceLarge"
+            android:textStyle="bold" />
+
+        <ImageView
+            android:id="@id/imageView1"
+            android:layout_width="fill_parent"
+            android:layout_height="1.0dip"
+            android:layout_margin="2.0dip"
+            android:scaleType="fitXY"
+            android:src="@android:color/darker_gray" />
+
+        <LinearLayout
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal" >
+
+            <LinearLayout
+                android:id="@+id/content_info"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="0.88"
+                android:orientation="vertical" >
+
+                <LinearLayout
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content" >
+
+                    <ImageView
+                        android:id="@+id/ImageView01"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:padding="5.0dip"
+                        android:src="@drawable/ic_location_place" />
+
+                    <TextView
+                        android:id="@+id/pharmacy_address"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center_vertical"
+                        android:layout_marginLeft="5.0dip"
+                        android:text=""
+                        android:textAppearance="?android:textAppearanceSmall" />
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content" >
+
+                    <ImageView
+                        android:id="@+id/imageView2"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:padding="5.0dip"
+                        android:src="@drawable/ic_device_access_time" />
+
+                    <TextView
+                        android:id="@+id/pharmacy_schedule"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center_vertical"
+                        android:layout_marginLeft="5.0dip"
+                        android:text=""
+                        android:textAppearance="?android:textAppearanceSmall" />
+                </LinearLayout>
+            </LinearLayout>
+
+            <ImageView
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical|right"
+                android:layout_weight="0.12"
+                android:src="@drawable/ic_detail_patch" />
+        </LinearLayout>
+
+        <ImageView
+            android:id="@id/imageView1"
+            android:layout_width="fill_parent"
+            android:layout_height="1.0dip"
+            android:layout_margin="2.0dip"
+            android:scaleType="fitXY"
+            android:src="@android:color/darker_gray" />
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="right" >
+
+            <Button
+                android:id="@+id/btn_pharmacy_ruta"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="10dp"
+                android:layout_marginRight="10dp"
+                android:background="@android:color/transparent"
+                android:drawableLeft="@drawable/ic_location_directions"
+                android:text=""
+                android:textAppearance="?android:textAppearanceSmall"
+                android:visibility="gone" />
+
+            <ImageView
+                android:id="@id/imageView1"
+                android:layout_width="1.0dip"
+                android:layout_height="fill_parent"
+                android:layout_margin="2.0dip"
+                android:scaleType="fitXY"
+                android:src="@android:color/darker_gray" />
+
+            <Button
+                android:id="@+id/btn_pharmacy_share"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="10dp"
+                android:layout_marginRight="10dp"
+                android:background="@android:color/transparent"
+                android:drawableLeft="@drawable/ic_social_share"
+                android:text="@string/btn_share"
+                android:textAppearance="?android:textAppearanceSmall" />
+        </LinearLayout>
+    </LinearLayout>
+
+</LinearLayout>
