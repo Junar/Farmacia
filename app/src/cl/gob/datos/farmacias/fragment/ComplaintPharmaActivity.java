@@ -17,6 +17,7 @@ import android.view.View.OnClickListener;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
+import android.widget.Toast;
 import cl.gob.datos.farmacias.R;
 import cl.gob.datos.farmacias.controller.AppController;
 
@@ -27,7 +28,8 @@ public class ComplaintPharmaActivity extends FragmentActivity {
     private Pharmacy pharma;
     private static final int TAKE_PHOTO = 1999;
     private static final int SEND_MAIL = 2000;
-    private static final String TAG = null;
+    private static final String TAG = ComplaintPharmaActivity.class
+            .getSimpleName();
     private EditText name;
     private EditText text;
     private static File mediaFile;
@@ -75,7 +77,9 @@ public class ComplaintPharmaActivity extends FragmentActivity {
                             Uri.fromFile(mediaFile));
                     startActivityForResult(camaraIntent, TAKE_PHOTO);
                 } else {
-                    // TODO: TIRAR MENSAJE
+                    Toast.makeText(getApplicationContext(),
+                            getString(R.string.pharma_complaint_camera_error),
+                            Toast.LENGTH_LONG).show();
                 }
 
             }

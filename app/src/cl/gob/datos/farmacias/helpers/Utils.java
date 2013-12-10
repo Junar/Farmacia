@@ -53,7 +53,7 @@ public class Utils {
         localStringBuilder.append("Farmacia: ");
         localStringBuilder.append(pharma.getName());
         localStringBuilder.append("\n");
-        localStringBuilder.append("Dir: ");
+        localStringBuilder.append("Dirección: ");
         localStringBuilder.append(pharma.getAddress());
         localStringBuilder.append("\n");
         if (pharma.getPhone().length() > 0) {
@@ -62,7 +62,7 @@ public class Utils {
             localStringBuilder.append("\n");
         }
         if (pharma.getLatitude() != 0 && pharma.getLongitude() != 0) {
-            localStringBuilder.append("Geo: ");
+            localStringBuilder.append("Ubicación: ");
             localStringBuilder.append("http://maps.google.com/?q="
                     + pharma.getLatitude() + "," + pharma.getLongitude());
             localStringBuilder.append("\n");
@@ -71,8 +71,8 @@ public class Utils {
                 + context.getPackageName());
         Intent localIntent = new Intent("android.intent.action.SEND");
         localIntent.setType("text/plain");
-        localIntent.putExtra("android.intent.extra.SUBJECT", "Farmacia: "
-                + pharma.getName());
+        localIntent.putExtra("android.intent.extra.SUBJECT",
+                "Farmacia recomendada");
         localIntent.putExtra("android.intent.extra.TEXT",
                 localStringBuilder.toString());
         if (pharma.getPhone().length() > 0) {

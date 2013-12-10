@@ -25,7 +25,7 @@
     <string name="menu_compartir">Compartir</string>
     <string name="info_marker_text">Ver detalle</string>
     <string name="current_day">Día:</string>
-    <string name="more_pharmas">Encontrá más farmacias de turno: http://play.google.com/store/apps/details?id=</string>
+    <string name="more_pharmas">Encuentra más farmacias de turno: http://play.google.com/store/apps/details?id=</string>
 
     <!-- CARGA INICIAL -->
     <string name="exit">Salir</string>
@@ -41,7 +41,7 @@
     <string name="pharma_complaint_title">Reportar Farmacia</string>
     <string name="pharma_complaint_name">Nombre completo</string>
     <string name="pharma_complaint_email">Correo electrónico</string>
-    <string name="pharma_complaint_text">Indique las observaciones que crea necesarias</string>
+    <string name="pharma_complaint_text">Indique los reportes que puedan ayudarnos a mejorar</string>
     <string name="pharma_complaint_thake_photo">Tomar una foto de la farmacia</string>
     <string name="pharma_complaint_email_subject">Reportar:</string>
     <string name="pharma_complaint_email_address">farmaciadeturno@minsal.cl</string>
@@ -49,6 +49,7 @@
     <string name="pharma_complaint_email_intent">Enviar vía email…</string>
     <string name="pharma_complaint_msg_empty">Ingrese un Mensaje</string>
     <string name="pharma_complaint_name_empty">Ingrese su nombre</string>
+    <string name="pharma_complaint_camera_error">Camara no disponible, intente nuevamente más tarde</string>
 
     <!-- CONFIG MAPA -->
     <string name="map_config_title">Delimitar el rango de búsqueda</string>
