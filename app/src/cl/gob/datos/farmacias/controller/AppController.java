@@ -154,8 +154,10 @@ public class AppController extends Application implements
 
     @Override
     public void onConnected(Bundle arg0) {
-        Log.i(TAG, "Connection successfully");
-        location = client.getLastLocation();
+        if (client != null) {
+            Log.i(TAG, "Connection successfully");
+            location = client.getLastLocation();
+        }
     }
 
     @Override
@@ -165,7 +167,7 @@ public class AppController extends Application implements
 
     public static Location getLastLocation() {
         connectLocationClient();
-        if (client.isConnected()) {
+        if (client != null && client.isConnected()) {
             Location tmp = client.getLastLocation();
             if (tmp != null) {
                 location = tmp;

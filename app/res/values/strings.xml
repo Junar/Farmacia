@@ -45,11 +45,12 @@
     <string name="pharma_complaint_thake_photo">Tomar una foto de la farmacia</string>
     <string name="pharma_complaint_email_subject">Reportar:</string>
     <string name="pharma_complaint_email_address">farmaciadeturno@minsal.cl</string>
-    <string name="pharma_complaint_email_subject">Reporte de Farmacia</string>
+    <string name="pharma_complaint_email_subject">Reporte de Farmacia:</string>
     <string name="pharma_complaint_email_intent">Enviar vía email…</string>
     <string name="pharma_complaint_msg_empty">Ingrese un Mensaje</string>
     <string name="pharma_complaint_name_empty">Ingrese su nombre</string>
     <string name="pharma_complaint_camera_error">Camara no disponible, intente nuevamente más tarde</string>
+    <string name="pharma_complaint_image_not_attached">La foto no pudo ser adjuntada</string>
 
     <!-- CONFIG MAPA -->
     <string name="map_config_title">Delimitar el rango de búsqueda</string>

@@ -1,5 +1,7 @@
 package cl.gob.datos.farmacias.helpers;
 
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
@@ -7,6 +9,9 @@ import java.util.GregorianCalendar;
 
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.graphics.BitmapFactory.Options;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Bundle;
@@ -23,6 +28,7 @@ import com.junar.searchpharma.Pharmacy;
 public class Utils {
 
     private final static String TAG = Utils.class.getSimpleName();
+    public static final int DEFAULT_JPG_QUALITY = 70;
 
     public static void openFragment(Fragment srcFrg, Fragment dstFragment,
             Bundle args, int idContainer, boolean addToBack) {
@@ -110,11 +116,81 @@ public class Utils {
         return false;
     }
 
-    public static String getDatePhone() {
+    public static String getDatePhone(boolean time) {
         Calendar cal = new GregorianCalendar();
         Date date = cal.getTime();
-        SimpleDateFormat df = new SimpleDateFormat("dd/MM/yyyy");
+        SimpleDateFormat df = null;
+        if (!time) {
+            df = new SimpleDateFormat("dd/MM/yyyy");
+        } else {
+            df = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");
+        }
         String formatteDate = df.format(date);
         return formatteDate;
+    }
+
+    public static boolean resizeImageByWidth(String imagePath, int width) {
+        return resizeImageByWidth(imagePath, width, DEFAULT_JPG_QUALITY);
+    }
+
+    public static boolean resizeImageByWidth(String imagePath, int width,
+            int quality) {
+        try {
+            Options options = new BitmapFactory.Options();
+            options.inScaled = false;
+            options.inDither = false;
+            options.inPurgeable = true;
+
+            Bitmap image = BitmapFactory.decodeFile(imagePath, options);
+            Float imageWidth = new Float(image.getWidth());
+            Float imageHeight = new Float(image.getHeight());
+            Float ratio = imageHeight / imageWidth;
+            compressJpgImage(Bitmap.createScaledBitmap(image, width,
+                    (int) (width * ratio), false), quality, imagePath);
+            image.recycle();
+        } catch (Exception e) {
+            Log.e(TAG, e.getMessage());
+            return false;
+        }
+        return true;
+    }
+
+    /**
+     * Compress a JPG image from a file and write it in the output file
+     * 
+     * This method compress a JPG image from a given path with the given quality
+     * and write the compressed image to the output given path
+     * 
+     * @param imagePath
+     *            the image to compress
+     * @param quality
+     *            the quality used to compress
+     * @param output
+     *            the output file path
+     * @return boolean true if it could write the image
+     * @throws FileNotFoundException
+     */
+    public static boolean compressJpgImage(String imagePath, int quality,
+            String output) {
+        Options options = new BitmapFactory.Options();
+        options.inScaled = false;
+        // options.inSampleSize = 8;
+        options.inTempStorage = new byte[32 * 1024];
+        Bitmap image = BitmapFactory.decodeFile(imagePath, options);
+        return compressJpgImage(image, quality, output);
+    }
+
+    public static boolean compressJpgImage(Bitmap image, int quality,
+            String output) {
+        try {
+            Boolean result = image.compress(Bitmap.CompressFormat.JPEG,
+                    quality, new FileOutputStream(output));
+            System.gc();
+            image.recycle();
+            return result;
+        } catch (Exception e) {
+            Log.e(TAG, e.getMessage());
+        }
+        return false;
     }
 }

@@ -45,7 +45,7 @@ public class PharmaDetailActivity extends FragmentActivity {
 
         TextView pharmacyHorario = (TextView) findViewById(R.id.pharmacy_horario);
         pharmacyHorario.setText(getText(R.string.current_day) + " "
-                + Utils.getDatePhone() + " - " + pharma.getSchedule());
+                + Utils.getDatePhone(false) + " - " + pharma.getSchedule());
 
         TextView address = (TextView) findViewById(R.id.parking_direccion);
         address.setText(pharma.getAddress());

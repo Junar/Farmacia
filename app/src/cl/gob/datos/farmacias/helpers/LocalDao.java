@@ -157,4 +157,14 @@ public class LocalDao {
         return pharmaDao.queryBuilder().where(PharmacyDao.Properties.Id.eq(id))
                 .unique();
     }
+
+    public Commune getCommuneById(String id) {
+        return communeDao.queryBuilder().where(CommuneDao.Properties.Id.eq(id))
+                .unique();
+    }
+
+    public Region getRegionById(String id) {
+        return regionDao.queryBuilder().where(RegionDao.Properties.Id.eq(id))
+                .unique();
+    }
 }

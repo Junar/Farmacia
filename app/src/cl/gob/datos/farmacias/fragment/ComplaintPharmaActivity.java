@@ -20,6 +20,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 import cl.gob.datos.farmacias.R;
 import cl.gob.datos.farmacias.controller.AppController;
+import cl.gob.datos.farmacias.helpers.Utils;
 
 import com.junar.searchpharma.Pharmacy;
 
@@ -28,6 +29,7 @@ public class ComplaintPharmaActivity extends FragmentActivity {
     private Pharmacy pharma;
     private static final int TAKE_PHOTO = 1999;
     private static final int SEND_MAIL = 2000;
+    private static final int PHOTO_WIDTH = 1024;
     private static final String TAG = ComplaintPharmaActivity.class
             .getSimpleName();
     private EditText name;
@@ -131,8 +133,20 @@ public class ComplaintPharmaActivity extends FragmentActivity {
         } else {
             text.setError(null);
             name.setError(null);
-            texto.insert(0, "Nombre Completo: " + name.getText().toString()
-                    + "\nObservaciones: ");
+            String regionName = AppController.getInstace().getLocalDao()
+                    .getRegionById(pharma.getRegion()).toString();
+            texto.insert(0,
+                    "Nombre de la Farmacia: "
+                            + pharma.getName()
+                            + "\nUbicación: "
+                            + pharma.getAddress()
+                            + ", "
+                            + AppController.getInstace().getLocalDao()
+                                    .getCommuneById(pharma.getCommune()) + ", "
+                            + regionName.substring(2) + "\nFecha y Hora: "
+                            + Utils.getDatePhone(true)
+                            + "\nNombre del Ciudadano: "
+                            + name.getText().toString() + "\nObservaciones: ");
             sendMail(texto);
         }
     }
@@ -150,8 +164,16 @@ public class ComplaintPharmaActivity extends FragmentActivity {
         emailIntent.putExtra(android.content.Intent.EXTRA_TEXT,
                 texto.toString());
         if (mediaFile != null && mediaFile.exists()) {
-            emailIntent.putExtra(android.content.Intent.EXTRA_STREAM,
-                    Uri.fromFile(mediaFile));
+            if (Utils.resizeImageByWidth(mediaFile.getAbsolutePath(),
+                    PHOTO_WIDTH)) {
+                emailIntent.putExtra(android.content.Intent.EXTRA_STREAM,
+                        Uri.fromFile(mediaFile));
+            } else {
+                Toast.makeText(
+                        getApplicationContext(),
+                        getString(R.string.pharma_complaint_image_not_attached),
+                        Toast.LENGTH_LONG).show();
+            }
         }
 
         startActivityForResult(Intent.createChooser(emailIntent,
@@ -159,10 +181,14 @@ public class ComplaintPharmaActivity extends FragmentActivity {
     }
 
     private File getOutputMediaFile() {
+
+        File dir = getApplicationContext().getExternalFilesDir(null);
+        if (!dir.exists())
+            dir.mkdirs();
+
         File mediaFileTmp = null;
         try {
-            mediaFileTmp = File.createTempFile(
-                    "Report_" + System.currentTimeMillis(), ".jpg");
+            mediaFileTmp = File.createTempFile("Report_", ".jpg", dir);
         } catch (IOException e) {
             Log.d(TAG, e.getMessage());
         }

@@ -103,7 +103,8 @@ public class PharmaClosestFragment extends SupportMapFragment {
                     name.setText(phar.getName());
                     address.setText(phar.getAddress());
                     horario.setText(getText(R.string.current_day) + " "
-                            + Utils.getDatePhone() + " - " + phar.getSchedule());
+                            + Utils.getDatePhone(false) + " - "
+                            + phar.getSchedule());
                 } else {
                     return null;
                 }

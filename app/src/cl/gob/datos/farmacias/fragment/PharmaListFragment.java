@@ -74,7 +74,7 @@ public class PharmaListFragment extends Fragment {
         }
 
         currentDate.setText(getText(R.string.current_day) + " "
-                + Utils.getDatePhone());
+                + Utils.getDatePhone(false));
 
         adapter = new CustomPharmaAdapter(getActivity(),
                 R.layout.fragment_pharmacy_item_row, pharmaList,
