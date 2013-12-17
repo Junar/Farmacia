@@ -55,16 +55,10 @@ public class SearchPharmaFragment extends Fragment {
         tmpCommuneList.add(comm);
 
         ArrayAdapter<Region> adapterRegion = new ArrayAdapter<Region>(
-                getActivity(), android.R.layout.simple_spinner_item, tmpList);
+                getActivity(), R.layout.spinner, tmpList);
 
         ArrayAdapter<Commune> adapterCommune = new ArrayAdapter<Commune>(
-                getActivity(), android.R.layout.simple_spinner_item,
-                tmpCommuneList);
-
-        adapterRegion
-                .setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        adapterCommune
-                .setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+                getActivity(), R.layout.spinner, tmpCommuneList);
 
         spinnerRegion.setAdapter(adapterRegion);
         spinnerCommune.setAdapter(adapterCommune);
@@ -86,9 +80,7 @@ public class SearchPharmaFragment extends Fragment {
                             .getCommuneListByRegion(region));
 
                     ArrayAdapter<Commune> adapterCommune = new ArrayAdapter<Commune>(
-                            getActivity(),
-                            android.R.layout.simple_spinner_dropdown_item,
-                            tmpCommuneList);
+                            getActivity(), R.layout.spinner, tmpCommuneList);
                     if (regionId > 0) {
                         spinnerCommune.setEnabled(true);
                         spinnerCommune.setAdapter(adapterCommune);

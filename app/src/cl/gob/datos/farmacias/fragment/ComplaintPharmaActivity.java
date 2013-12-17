@@ -7,7 +7,7 @@ import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
-import android.support.v4.app.FragmentActivity;
+import android.support.v7.app.ActionBarActivity;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.Menu;
@@ -24,7 +24,7 @@ import cl.gob.datos.farmacias.helpers.Utils;
 
 import com.junar.searchpharma.Pharmacy;
 
-public class ComplaintPharmaActivity extends FragmentActivity {
+public class ComplaintPharmaActivity extends ActionBarActivity {
 
     private Pharmacy pharma;
     private static final int TAKE_PHOTO = 1999;
@@ -45,9 +45,9 @@ public class ComplaintPharmaActivity extends FragmentActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.fragment_complaint);
 
-        getActionBar().setHomeButtonEnabled(true);
-        getActionBar().setDisplayHomeAsUpEnabled(true);
-        getActionBar().setDisplayShowTitleEnabled(true);
+        getSupportActionBar().setHomeButtonEnabled(true);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        getSupportActionBar().setDisplayShowTitleEnabled(true);
 
         long pharId = getIntent().getExtras().getLong("id");
 

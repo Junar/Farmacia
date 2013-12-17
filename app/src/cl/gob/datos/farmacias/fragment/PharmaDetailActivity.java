@@ -3,15 +3,16 @@ package cl.gob.datos.farmacias.fragment;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
-import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
+import android.support.v4.view.MenuItemCompat;
+import android.support.v7.app.ActionBarActivity;
+import android.support.v7.widget.ShareActionProvider;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
 import android.widget.ImageView;
-import android.widget.ShareActionProvider;
 import android.widget.TextView;
 import cl.gob.datos.farmacias.R;
 import cl.gob.datos.farmacias.controller.AppController;
@@ -26,7 +27,7 @@ import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.junar.searchpharma.Pharmacy;
 
-public class PharmaDetailActivity extends FragmentActivity {
+public class PharmaDetailActivity extends ActionBarActivity {
 
     private Pharmacy pharma;
 
@@ -35,9 +36,9 @@ public class PharmaDetailActivity extends FragmentActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.fragment_pharmacy_detail);
 
-        getActionBar().setHomeButtonEnabled(true);
-        getActionBar().setDisplayHomeAsUpEnabled(true);
-        getActionBar().setDisplayShowTitleEnabled(true);
+        getSupportActionBar().setHomeButtonEnabled(true);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        getSupportActionBar().setDisplayShowTitleEnabled(true);
 
         long pharId = getIntent().getExtras().getLong("id");
 
@@ -128,8 +129,8 @@ public class PharmaDetailActivity extends FragmentActivity {
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.pharmacy_detail, menu);
         MenuItem shareItem = menu.findItem(R.id.action_share);
-        ShareActionProvider mShareActionProvider = (ShareActionProvider) shareItem
-                .getActionProvider();
+        ShareActionProvider mShareActionProvider = (ShareActionProvider) MenuItemCompat
+                .getActionProvider(shareItem);
         mShareActionProvider.setShareIntent(Utils.createShareIntent(
                 getApplicationContext(), pharma));
 

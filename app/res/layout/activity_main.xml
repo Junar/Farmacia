@@ -11,7 +11,7 @@
         android:layout_above="@+id/tabs"
         tools:context=".MainActivity" />
 
-    <com.astuetz.viewpager.extensions.PagerSlidingTabStrip
+    <com.astuetz.PagerSlidingTabStrip
         android:id="@+id/tabs"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -19,9 +19,9 @@
         android:background="@drawable/background_tabs"
         android:paddingBottom="8dp"
         android:paddingTop="8dp"
-        junar:indicatorColor="#2d63af"
-        junar:indicatorHeight="2.5dp"
-        junar:shouldExpand="true" />
+        junar:pstsIndicatorColor="#2d63af"
+        junar:pstsIndicatorHeight="2.5dp"
+        junar:pstsShouldExpand="true" />
 
     <FrameLayout
         android:layout_width="match_parent"

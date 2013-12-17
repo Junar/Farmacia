@@ -2,29 +2,28 @@ package cl.gob.datos.farmacias.fragment;
 
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.view.MenuItemCompat;
 import android.support.v4.view.ViewPager;
 import android.support.v4.view.ViewPager.OnPageChangeListener;
+import android.support.v7.app.ActionBarActivity;
+import android.support.v7.widget.SearchView;
+import android.support.v7.widget.SearchView.OnQueryTextListener;
 import android.view.LayoutInflater;
 import android.view.Menu;
-import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.SearchView;
-import android.widget.SearchView.OnQueryTextListener;
 import cl.gob.datos.farmacias.R;
 import cl.gob.datos.farmacias.adapter.CustomPharmaAdapter;
 import cl.gob.datos.farmacias.controller.AppController;
 
-import com.astuetz.viewpager.extensions.PagerSlidingTabStrip;
-import com.astuetz.viewpager.extensions.PagerSlidingTabStrip.IconTabProvider;
+import com.astuetz.PagerSlidingTabStrip;
+import com.astuetz.PagerSlidingTabStrip.IconTabProvider;
 
-public class MainActivity extends FragmentActivity {
+public class MainActivity extends ActionBarActivity {
 
     private SectionsPagerAdapter mSectionsPagerAdapter;
     private ViewPager mViewPager;
@@ -40,8 +39,7 @@ public class MainActivity extends FragmentActivity {
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        MenuInflater inflater = new MenuInflater(this);
-        inflater.inflate(R.menu.pharmacy_list, menu);
+        getMenuInflater().inflate(R.menu.pharmacy_list, menu);
         mMenu = menu;
         final PharmaListFragment listado = (PharmaListFragment) getSupportFragmentManager()
                 .findFragmentByTag("listadofarmacias");
@@ -93,8 +91,8 @@ public class MainActivity extends FragmentActivity {
     }
 
     private void showUp(boolean show) {
-        getActionBar().setHomeButtonEnabled(show);
-        getActionBar().setDisplayHomeAsUpEnabled(show);
+        getSupportActionBar().setHomeButtonEnabled(show);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(show);
     }
 
     @Override
@@ -156,32 +154,44 @@ public class MainActivity extends FragmentActivity {
 
     @Override
     public void onBackPressed() {
-        Fragment search = getSupportFragmentManager().findFragmentByTag("zero");
-        Fragment map = getSupportFragmentManager().findFragmentByTag("mapa");
-        Fragment listFromMap = getSupportFragmentManager().findFragmentByTag(
-                "listadodesdemap");
-        Fragment mapFromList = getSupportFragmentManager().findFragmentByTag(
-                "mapadesdelistado");
-        Fragment listado = getSupportFragmentManager().findFragmentByTag(
-                "listadofarmacias");
-        if ((selectedPage == 0 && search != null && search.isVisible())
-                || (selectedPage == 1 && map != null && map.isVisible())
-                || selectedPage == 2) {
-            finish();
+        if (searchMenuItem != null
+                && MenuItemCompat.isActionViewExpanded(searchMenuItem)) {
+            MenuItemCompat.collapseActionView(searchMenuItem);
         } else {
-            FragmentManager fm = getSupportFragmentManager();
-            FragmentTransaction ft = fm.beginTransaction();
-            if (selectedPage == 1 && listFromMap != null
-                    && listFromMap.isVisible()) {
-                ft.replace(R.id.frames_map_container, map).commit();
-            } else if (selectedPage == 0 && mapFromList != null
-                    && mapFromList.isVisible()) {
-                ft.replace(R.id.frames_container, listado).commit();
-            } else if (selectedPage == 0 && listado != null
-                    && listado.isVisible()) {
-                ft.replace(R.id.frames_container, search).commit();
+            Fragment search = getSupportFragmentManager().findFragmentByTag(
+                    "zero");
+            Fragment map = getSupportFragmentManager()
+                    .findFragmentByTag("mapa");
+            Fragment listFromMap = getSupportFragmentManager()
+                    .findFragmentByTag("listadodesdemap");
+            Fragment mapFromList = getSupportFragmentManager()
+                    .findFragmentByTag("mapadesdelistado");
+            Fragment listado = getSupportFragmentManager().findFragmentByTag(
+                    "listadofarmacias");
+            if ((selectedPage == 0 && search != null && search.isVisible())
+                    || (selectedPage == 1 && map != null && map.isVisible())
+                    || selectedPage == 2) {
+                finish();
             } else {
-                super.onBackPressed();
+                FragmentManager fm = getSupportFragmentManager();
+                FragmentTransaction ft = fm.beginTransaction();
+                if (selectedPage == 1 && listFromMap != null
+                        && listFromMap.isVisible()) {
+                    ft.replace(R.id.frames_map_container, map).commit();
+                } else if (selectedPage == 0 && mapFromList != null
+                        && mapFromList.isVisible()) {
+                    ft.replace(R.id.frames_container, listado).commit();
+                } else if (selectedPage == 0 && listado != null
+                        && listado.isVisible()) {
+                    if (searchMenuItem != null) {
+                        ((SearchView) MenuItemCompat
+                                .getActionView(searchMenuItem)).setQuery("",
+                                false);
+                    }
+                    ft.replace(R.id.frames_container, search).commit();
+                } else {
+                    super.onBackPressed();
+                }
             }
         }
 
@@ -232,10 +242,10 @@ public class MainActivity extends FragmentActivity {
     @Override
     public boolean onSearchRequested() {
         if (searchMenuItem != null) {
-            if (searchMenuItem.isActionViewExpanded()) {
-                searchMenuItem.collapseActionView();
+            if (MenuItemCompat.isActionViewExpanded(searchMenuItem)) {
+                MenuItemCompat.collapseActionView(searchMenuItem);
             } else {
-                searchMenuItem.expandActionView();
+                MenuItemCompat.expandActionView(searchMenuItem);
             }
         }
         return super.onSearchRequested();
@@ -272,14 +282,14 @@ public class MainActivity extends FragmentActivity {
             @Override
             public void onPageSelected(int page) {
                 selectedPage = page;
-                getActionBar().setTitle(
+                getSupportActionBar().setTitle(
                         mSectionsPagerAdapter.getPageTitle(selectedPage));
-                invalidateOptionsMenu();
+                supportInvalidateOptionsMenu();
                 AppController.getLastLocation();
-                if ((page == 0 || page == 1) && searchMenuItem != null) {
-                    searchMenuItem.collapseActionView();
-                    ((SearchView) searchMenuItem.getActionView()).setQuery("",
-                            false);
+                if (searchMenuItem != null) {
+                    MenuItemCompat.collapseActionView(searchMenuItem);
+                    ((SearchView) MenuItemCompat.getActionView(searchMenuItem))
+                            .setQuery("", false);
                 }
             }
 
@@ -291,7 +301,7 @@ public class MainActivity extends FragmentActivity {
             public void onPageScrollStateChanged(int arg0) {
             }
         });
-        getActionBar().setTitle(
+        getSupportActionBar().setTitle(
                 mSectionsPagerAdapter.getPageTitle(selectedPage));
     }
 
