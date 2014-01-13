@@ -99,6 +99,7 @@ public class JunarAPI {
         HttpClient httpClient = new DefaultHttpClient(httpParameters);
         String response = null;
         try {
+            Log.i("junar", url);
             HttpGet httpGet = new HttpGet(url);
             ResponseHandler<String> responseHandler = new BasicResponseHandler();
             response = httpClient.execute(httpGet, responseHandler);
