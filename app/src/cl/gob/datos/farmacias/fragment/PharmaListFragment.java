@@ -1,5 +1,6 @@
 package cl.gob.datos.farmacias.fragment;
 
+import java.util.Collections;
 import java.util.List;
 
 import android.location.Location;
@@ -14,6 +15,7 @@ import cl.gob.datos.farmacias.R;
 import cl.gob.datos.farmacias.adapter.CustomPharmaAdapter;
 import cl.gob.datos.farmacias.controller.AppController;
 import cl.gob.datos.farmacias.helpers.LocalDao;
+import cl.gob.datos.farmacias.helpers.PharmacyComparator;
 import cl.gob.datos.farmacias.helpers.Utils;
 
 import com.google.android.gms.maps.model.LatLng;
@@ -53,13 +55,13 @@ public class PharmaListFragment extends Fragment {
             commune = args.getInt("commune");
             region = args.getInt("region");
             localDao = AppController.getInstace().getLocalDao();
-            pharmaList = localDao.getPharmaListByRegionAndComune(region,
-                    commune);
             Location location = AppController.getLastLocation();
             if (location != null) {
                 currentLocation = new LatLng(location.getLatitude(),
                         location.getLongitude());
             }
+            pharmaList = localDao.getPharmaListByRegionAndComune(region,
+                    commune, currentLocation);
             regionName.setText(args.getString("title"));
         } else {
             long radio = args.getLong("radio");
@@ -74,8 +76,9 @@ public class PharmaListFragment extends Fragment {
         }
 
         currentDate.setText(getText(R.string.current_day) + " "
-                + Utils.getDatePhone(false));
+                + Utils.getDatePhone(getActivity().getApplicationContext()));
 
+        Collections.sort(pharmaList, new PharmacyComparator<Pharmacy>());
         adapter = new CustomPharmaAdapter(getActivity(),
                 R.layout.fragment_pharmacy_item_row, pharmaList,
                 currentLocation);

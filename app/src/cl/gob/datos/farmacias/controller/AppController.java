@@ -125,22 +125,12 @@ public class AppController extends Application implements
             long curRadioInMeters) {
         if (actualLocation == null)
             return null;
-        List<Pharmacy> pharmaMarkers = getPharmaList();
+        List<Pharmacy> pharmaMarkers = localDao.getPharmaListByRegionAndComune(
+                0, 0, actualLocation);
         List<Pharmacy> pharmasInRadio = new ArrayList<Pharmacy>();
 
         for (Pharmacy marker : pharmaMarkers) {
-            /**
-             * The computed distance is stored in results[0]. If results has
-             * length 2 or greater, the initial bearing is stored in results[1].
-             * If results has length 3 or greater, the final bearing is stored
-             * in results[2].
-             */
-            float[] results = new float[1];
-            Location.distanceBetween(actualLocation.latitude,
-                    actualLocation.longitude, marker.getLatitude(),
-                    marker.getLongitude(), results);
-
-            if (results[0] <= curRadioInMeters) {
+            if (marker.getDistance() <= curRadioInMeters) {
                 pharmasInRadio.add(marker);
             }
         }

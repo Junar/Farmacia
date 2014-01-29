@@ -9,40 +9,42 @@ import org.json.JSONObject;
 
 import android.util.Log;
 
+import com.junar.api.JunarAPI;
 import com.junar.searchpharma.Commune;
 
 public class CommuneJsonHelper {
     private static final String TAG = CommuneJsonHelper.class.getSimpleName();
+    private String DATA_GUID = "COMUN-Y-NOMBR-MINSA";
 
-    public List<Commune> parseJsonArrayResponse(String response) {
-        // {"comunas": [{"id":1405,"region_id":2,"name":"Pica"}]}
+    public List<Commune> parseJsonArrayResponse(String response)
+            throws JSONException {
         List<Commune> communeList = new ArrayList<Commune>();
-        try {
-            JSONObject jsonResponse = new JSONObject(response);
-            JSONArray resultArray = jsonResponse.getJSONArray("comunas");
-            for (int i = 0; i < resultArray.length(); i++) {
-                JSONObject columnArray = resultArray.getJSONObject(i);
-                Commune commune = getCommuneFromJson(columnArray);
-                communeList.add(commune);
-            }
-        } catch (JSONException e) {
-            Log.e(TAG, e.getMessage());
+
+        JSONObject jsonResponse = new JSONObject(response);
+        JSONArray resultArray = jsonResponse.getJSONArray("result");
+        for (int i = 1; i < resultArray.length(); i++) {
+            JSONArray columnArray = resultArray.getJSONArray(i);
+            Commune commune = getCommuneFromJson(columnArray);
+            communeList.add(commune);
         }
+
         return communeList;
     }
 
-    private Commune getCommuneFromJson(JSONObject json) {
+    private Commune getCommuneFromJson(JSONArray json) {
         Commune commune = new Commune();
         try {
-            // {"id":1401,"region_id":2,"name":"Pozo Almonte"},
-            commune.setCode(json.getInt("id"));
-            commune.setId(json.getLong("id"));
-            commune.setRegionCode(json.getInt("region_id"));
-            commune.setName(json.getString("name"));
-            Log.d(TAG, "Commune: ".concat(commune.toString()));
+            commune.setCode(json.getInt(0));
+            commune.setId(json.getLong(0));
+            commune.setName(json.getString(1));
         } catch (JSONException e) {
             Log.e(TAG, e.getMessage());
         }
         return commune;
+    }
+
+    public String invokeDatastream(String[] arguments, String[] filters) {
+        JunarAPI junar = new JunarAPI();
+        return junar.invoke(DATA_GUID, arguments, filters);
     }
 }

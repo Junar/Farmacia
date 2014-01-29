@@ -9,6 +9,7 @@ import java.util.GregorianCalendar;
 
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.BitmapFactory.Options;
@@ -20,6 +21,7 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.util.Log;
 import cl.gob.datos.farmacias.R;
+import cl.gob.datos.farmacias.controller.SyncController;
 
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GooglePlayServicesUtil;
@@ -29,6 +31,9 @@ public class Utils {
 
     private final static String TAG = Utils.class.getSimpleName();
     public static final int DEFAULT_JPG_QUALITY = 70;
+    private final static String KEY_DAY = "day";
+    private final static String KEY_MONTH = "month";
+    private final static String KEY_YEAR = "year";
 
     public static void openFragment(Fragment srcFrg, Fragment dstFragment,
             Bundle args, int idContainer, boolean addToBack) {
@@ -116,16 +121,12 @@ public class Utils {
         return false;
     }
 
-    public static String getDatePhone(boolean time) {
-        Calendar cal = new GregorianCalendar();
-        Date date = cal.getTime();
-        SimpleDateFormat df = null;
-        if (!time) {
-            df = new SimpleDateFormat("dd/MM/yyyy");
-        } else {
-            df = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");
-        }
-        String formatteDate = df.format(date);
+    public static String getDatePhone(Context context) {
+        SharedPreferences pref = context.getSharedPreferences(
+                SyncController.PREFS_NAME, 0);
+        String formatteDate = pref.getString(KEY_DAY, "") + "/"
+                + pref.getString(KEY_MONTH, "") + "/"
+                + pref.getString(KEY_YEAR, "");
         return formatteDate;
     }
 

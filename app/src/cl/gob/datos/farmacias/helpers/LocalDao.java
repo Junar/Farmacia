@@ -1,12 +1,15 @@
 package cl.gob.datos.farmacias.helpers;
 
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
 
 import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
+import android.location.Location;
 import android.util.Log;
 
+import com.google.android.gms.maps.model.LatLng;
 import com.junar.searchpharma.CacheControl;
 import com.junar.searchpharma.Commune;
 import com.junar.searchpharma.Pharmacy;
@@ -83,10 +86,32 @@ public class LocalDao {
     }
 
     public List<Pharmacy> getPharmaListByRegionAndComune(int region, int commune) {
-        List<Pharmacy> pharmacyList = pharmaDao
-                .queryBuilder()
-                .where(PharmacyDao.Properties.Region.eq(region),
-                        PharmacyDao.Properties.Commune.eq(commune)).list();
+        return getPharmaListByRegionAndComune(region, commune, null);
+    }
+
+    public List<Pharmacy> getPharmaListByRegionAndComune(int region,
+            int commune, LatLng location) {
+        List<Pharmacy> pharmacyList;
+        if (region == 0 && commune == 0) {
+            pharmacyList = getPharmaList();
+        } else {
+            pharmacyList = pharmaDao
+                    .queryBuilder()
+                    .where(PharmacyDao.Properties.Region.eq(region),
+                            PharmacyDao.Properties.Commune.eq(commune)).list();
+        }
+        if (location != null) {
+            List<Pharmacy> list = new ArrayList<Pharmacy>();
+            float[] results;
+            for (Pharmacy pharma : pharmacyList) {
+                results = new float[1];
+                Location.distanceBetween(location.latitude, location.longitude,
+                        pharma.getLatitude(), pharma.getLongitude(), results);
+                pharma.setDistance(results[0]);
+                list.add(pharma);
+            }
+            return list;
+        }
 
         return pharmacyList;
     }
@@ -97,7 +122,7 @@ public class LocalDao {
                 .queryBuilder()
                 .where(new StringCondition(
                         "_ID IN (SELECT REGION FROM PHARMACY GROUP BY REGION)"))
-                .orderAsc(com.junar.searchpharma.dao.RegionDao.Properties.Name)
+                .orderAsc(com.junar.searchpharma.dao.RegionDao.Properties.Code)
                 .list();
         return regionList;
     }
@@ -115,8 +140,16 @@ public class LocalDao {
         return (count == 0) ? true : false;
     }
 
+    public void cleanCacheRegionList() {
+        this.regionDao.deleteAll();
+    }
+
     public void cacheRegionList(List<Region> list) {
         this.regionDao.insertInTx(list);
+    }
+
+    public void cleanCacheCommuneList() {
+        this.communeDao.deleteAll();
     }
 
     public void cacheCommuneList(List<Commune> list) {

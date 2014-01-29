@@ -45,7 +45,7 @@ public class SearchPharmaFragment extends Fragment {
                 getString(R.string.region_spinner_label)));
         for (Region region : localDao.getRegionList()) {
             tmpList.add(new Region(region.getId(), region.getCode(),
-                    new String(region.getName()).substring(2)));
+                    new String(region.getName())));
         }
 
         spinnerCommune.setEnabled(false);

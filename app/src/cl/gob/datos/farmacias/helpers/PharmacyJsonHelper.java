@@ -14,7 +14,7 @@ import com.junar.searchpharma.Pharmacy;
 
 public class PharmacyJsonHelper {
     private static final String TAG = PharmacyJsonHelper.class.getSimpleName();
-    private String DATA_GUID = "FARMA-SEMES-DIA-Y-MES";
+    private String DATA_GUID = "FARMA-DE-TURNO-EN-LINEA";
 
     public void getDatastreamInfo() {
         JunarAPI junar = new JunarAPI();
@@ -26,7 +26,8 @@ public class PharmacyJsonHelper {
         return junar.invoke(DATA_GUID, arguments, filters);
     }
 
-    public List<Pharmacy> parseJsonArrayResponse(String response) {
+    public List<Pharmacy> parseJsonArrayResponse(String response)
+            throws JSONException {
         /**
          * { "tags":[], "id":"LISTA-FARMA-DE-TURNO-2", "result": [
          * ["región","comuna"
@@ -37,19 +38,14 @@ public class PharmacyJsonHelper {
          * ,"-23.6491776","-70.3963394",""]] }
          */
         List<Pharmacy> pharmaList = new ArrayList<Pharmacy>();
-        try {
-            JSONObject jsonResponse = new JSONObject(response);
-            JSONArray resultArray = jsonResponse.getJSONArray("result");
+        JSONObject jsonResponse = new JSONObject(response);
+        JSONArray resultArray = jsonResponse.getJSONArray("result");
 
-            for (int i = 1; i < resultArray.length(); i++) {
-                JSONArray columnArray = resultArray.getJSONArray(i);
-                Pharmacy pharma = this.getPharmacyFromJson(columnArray);
-                pharmaList.add(pharma);
-            }
-        } catch (JSONException e) {
-            Log.e(TAG, e.getMessage());
+        for (int i = 1; i < resultArray.length(); i++) {
+            JSONArray columnArray = resultArray.getJSONArray(i);
+            Pharmacy pharma = getPharmacyFromJson(columnArray);
+            pharmaList.add(pharma);
         }
-
         return pharmaList;
     }
 
@@ -65,22 +61,20 @@ public class PharmacyJsonHelper {
              */
             pharma.setRegion(json.getString(0));
             pharma.setCommune(json.getString(1));
-            pharma.setName(json.getString(2));
-            pharma.setAddress(json.getString(3));
-            pharma.setDay(json.getInt(4));
-            pharma.setMonth(json.getInt(5));
-            pharma.setSchedule(json.getString(6));
-            pharma.setPhone(json.getString(9));
+            pharma.setName(json.getString(3));
+            pharma.setAddress(json.getString(2));
+            pharma.setSchedule("DESDE LAS " + json.getString(4) + " HASTA LAS "
+                    + json.getString(5));
+            pharma.setPhone(json.getString(8));
             try {
-                pharma.setLatitude((float) json.getDouble(7));
-                pharma.setLongitude((float) json.getDouble(8));
+                pharma.setLatitude((float) json.getDouble(6));
+                pharma.setLongitude((float) json.getDouble(7));
             } catch (JSONException jee) {
                 pharma.setLatitude(Float.valueOf(0));
                 pharma.setLongitude(Float.valueOf(0));
             }
-            Log.i(TAG, "Pharmacy: ".concat(pharma.toString()));
         } catch (JSONException e) {
-            Log.i(TAG, e.getMessage());
+            Log.e(TAG, e.getMessage());
         }
         return pharma;
     }

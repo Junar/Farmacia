@@ -118,10 +118,13 @@ public class CustomPharmaAdapter extends ArrayAdapter<Pharmacy> implements
                 && currentLocation != null) {
             holder.btnRoute.setVisibility(View.VISIBLE);
             float[] results = new float[1];
-            Location.distanceBetween(currentLocation.latitude,
-                    currentLocation.longitude, pharma.getLatitude(),
-                    pharma.getLongitude(), results);
-
+            if (pharma.getDistance() > 0) {
+                results[0] = pharma.getDistance();
+            } else {
+                Location.distanceBetween(currentLocation.latitude,
+                        currentLocation.longitude, pharma.getLatitude(),
+                        pharma.getLongitude(), results);
+            }
             String distanceStr = (long) results[0] + " Mts";
             if (results[0] > 1000) {
                 NumberFormat nf = NumberFormat.getInstance();

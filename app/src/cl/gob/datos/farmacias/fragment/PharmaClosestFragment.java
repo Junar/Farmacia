@@ -103,7 +103,7 @@ public class PharmaClosestFragment extends SupportMapFragment {
                     name.setText(phar.getName());
                     address.setText(phar.getAddress());
                     horario.setText(getText(R.string.current_day) + " "
-                            + Utils.getDatePhone(false) + " - "
+                            + Utils.getDatePhone(context) + " - "
                             + phar.getSchedule());
                 } else {
                     return null;
@@ -184,6 +184,7 @@ public class PharmaClosestFragment extends SupportMapFragment {
 
     protected void addActualLocationMarker() {
         LatLng hereLatLng = getActualLatLng();
+        // LatLng hereLatLng = new LatLng(-33.47269,-70.642917);
         if (hereLatLng != null) {
             currentLocation = hereLatLng;
             googleMap.addMarker(new MarkerOptions().position(hereLatLng).title(

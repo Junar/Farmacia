@@ -46,7 +46,7 @@ public class PharmaDetailActivity extends ActionBarActivity {
 
         TextView pharmacyHorario = (TextView) findViewById(R.id.pharmacy_horario);
         pharmacyHorario.setText(getText(R.string.current_day) + " "
-                + Utils.getDatePhone(false) + " - " + pharma.getSchedule());
+                + Utils.getDatePhone(getApplicationContext()) + " - " + pharma.getSchedule());
 
         TextView address = (TextView) findViewById(R.id.parking_direccion);
         address.setText(pharma.getAddress());

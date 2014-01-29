@@ -17,11 +17,14 @@ public class JunarAPI {
     private final String DS_URI = "/datastreams/";
     private final String INVOKE_URI = DS_URI.concat("invoke/");
     private String OUTPUT = "json_array";
+    public static final String PARSE_APP_ID = "";
+    public static final String PARSE_REST_API = "";
     // Set the timeout in milliseconds until a connection is established.
     private static final int timeoutConnection = 30000;
     // Set the default socket timeout (SO_TIMEOUT)
     // in milliseconds which is the timeout for waiting for data.
     private static final int timeoutSocket = 30000;
+    private static final String TAG = JunarAPI.class.getSimpleName();
 
     public String getApiKey() {
         return this.API_KEY;
@@ -99,7 +102,7 @@ public class JunarAPI {
         HttpClient httpClient = new DefaultHttpClient(httpParameters);
         String response = null;
         try {
-            Log.i("junar", url);
+            Log.i(TAG, url);
             HttpGet httpGet = new HttpGet(url);
             ResponseHandler<String> responseHandler = new BasicResponseHandler();
             response = httpClient.execute(httpGet, responseHandler);

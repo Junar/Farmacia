@@ -13,6 +13,7 @@ import android.view.MenuItem.OnMenuItemClickListener;
 import android.view.View;
 import android.widget.ProgressBar;
 import android.widget.TextView;
+import android.widget.Toast;
 import cl.gob.datos.farmacias.R;
 import cl.gob.datos.farmacias.controller.SyncController;
 import cl.gob.datos.farmacias.helpers.Utils;
@@ -22,6 +23,7 @@ public class InitialActivity extends Activity {
     private static final String NO_ERROR = "NO_ERROR";
     private static final String CONECTIVITY_ERROR = "CONECTIVITY_ERROR";
     private static final String PARSER_ERROR = "PARSER_ERROR";
+    private static final String TOAST_ERROR = "TOAST_ERROR";
 
     public boolean onCreateOptionsMenu(Menu menu) {
         menu.add(R.string.exit).setOnMenuItemClickListener(
@@ -72,14 +74,25 @@ public class InitialActivity extends Activity {
                 return CONECTIVITY_ERROR;
             } catch (Exception e) {
                 Log.e(TAG, e.getMessage());
-                return PARSER_ERROR;
+                if (e.getMessage().equalsIgnoreCase("Toast")) {
+                    return TOAST_ERROR;
+                } else {
+                    return PARSER_ERROR;
+                }
             }
             return NO_ERROR;
         }
 
         protected void onPostExecute(String result) {
             super.onPostExecute(result);
-            if (result.equals(NO_ERROR)) {
+            if (result.equals(NO_ERROR) || result.equals(TOAST_ERROR)) {
+                if (result.equals(TOAST_ERROR)) {
+                    Toast.makeText(
+                            getApplicationContext(),
+                            getApplicationContext().getString(
+                                    R.string.download_new_information_error),
+                            Toast.LENGTH_LONG).show();
+                }
                 goToSearchPharmaActivity();
             } else {
                 progress.setVisibility(View.GONE);

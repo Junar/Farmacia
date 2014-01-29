@@ -1,9 +1,6 @@
 package cl.gob.datos.farmacias.controller;
 
-import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.List;
@@ -17,7 +14,6 @@ import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.util.Log;
-import cl.gob.datos.farmacias.R;
 import cl.gob.datos.farmacias.helpers.CommuneJsonHelper;
 import cl.gob.datos.farmacias.helpers.LocalDao;
 import cl.gob.datos.farmacias.helpers.PharmacyJsonHelper;
@@ -30,11 +26,13 @@ import com.junar.searchpharma.Region;
 
 public class SyncController {
     private static final String TAG = SyncController.class.getSimpleName();
-    private final String DATE_FORMAT_MONTH = "M";
-    private final String DATE_FORMAT_DAY = "d";
-    private final String PREFS_NAME = "syncPharmaPreference";
-    private final String KEY_DAY = "day";
-    private final String KEY_MONTH = "month";
+    private final String DATE_FORMAT_MONTH = "MM";
+    private final String DATE_FORMAT_DAY = "dd";
+    private final String DATE_FORMAT_YEAR = "yyyy";
+    public static final String PREFS_NAME = "syncPharmaPreference";
+    public static final String KEY_DAY = "day";
+    public static final String KEY_MONTH = "month";
+    public static final String KEY_YEAR = "year";
     private LocalDao localDao;
     private Context mContext;
     private SharedPreferences pref;
@@ -57,13 +55,12 @@ public class SyncController {
             try {
                 if (localDao.isFirstPopulate()) {
                     firstTime = true;
-                    parseComuneFile(R.raw.codigo_ciudades);
                 }
                 cachePharmaList();
             } catch (JSONException e) {
                 Log.e(TAG, e.getMessage());
                 if (firstTime || isDiferentSyncDay()) {
-                    throw new JSONException("Error Parsing the data set.");
+                    throw new JSONException(e.getMessage());
                 }
             }
         } else {
@@ -71,20 +68,6 @@ public class SyncController {
                 throw new TimeoutException("There is not internet conection");
             }
         }
-    }
-
-    public void parseComuneFile(int resourceId) throws JSONException,
-            IOException {
-        InputStream is = mContext.getResources().openRawResource(resourceId);
-        BufferedReader br = new BufferedReader(new InputStreamReader(is));
-        String readLine = null;
-        StringBuilder result = new StringBuilder();
-        while ((readLine = br.readLine()) != null) {
-            result.append(readLine);
-        }
-        cacheRegionList(result.toString());
-        is.close();
-        br.close();
     }
 
     private void cachePharmaList() throws JSONException, TimeoutException {
@@ -95,73 +78,110 @@ public class SyncController {
         if (jsonArrayResponse == null) {
             throw new TimeoutException("There is not internet conection");
         }
-        JSONArray jArray = new JSONObject(jsonArrayResponse)
+        final JSONArray jArray = new JSONObject(jsonArrayResponse)
                 .getJSONArray("result");
-        if (jArray.length() > 0) {
-            localDao.getDaoSession().runInTx(new Runnable() {
-                @Override
-                public void run() {
-                    localDao.cleanCachePharmaList();
-                    List<Pharmacy> pharmaList = pharmacyDao
-                            .parseJsonArrayResponse(jsonArrayResponse);
-                    localDao.cachePharmaList(pharmaList);
-                    localDao.addDatasetCacheControl();
+
+        Runnable runner = new Runnable() {
+            private String hasFail = "false";
+
+            public String toString() {
+                return hasFail;
+            }
+
+            @Override
+            public void run() {
+                try {
+                    if (jArray.length() > 0) {
+                        localDao.cleanCacheRegionList();
+                        localDao.cleanCacheCommuneList();
+                        localDao.cleanCachePharmaList();
+                        List<Pharmacy> pharmaList = pharmacyDao
+                                .parseJsonArrayResponse(jsonArrayResponse);
+                        localDao.cacheRegionList(cacheRegionList());
+                        localDao.cacheCommuneList(cacheComuneList());
+                        localDao.cachePharmaList(pharmaList);
+                        localDao.addDatasetCacheControl();
+                        saveSyncDay();
+                    } else {
+                        throw new JSONException(
+                                "There is an error parsing pharma list");
+                    }
+                } catch (Exception e) {
+                    if (localDao.isFirstPopulate()) {
+                        hasFail = "true";
+                    } else {
+                        hasFail = "toast";
+                    }
                 }
-            });
-            saveSyncDay();
-        } else {
-            Log.d(TAG, "There is not pharmacies for the current day.");
+            }
+        };
+
+        localDao.getDaoSession().runInTx(runner);
+        if (runner.toString().equals("true")) {
+            throw new JSONException("There is an error parsing pharma list");
+        } else if (runner.toString().equals("toast")) {
+            throw new JSONException("Toast");
         }
     }
 
-    private void cacheRegionList(String result) throws JSONException {
-        JSONArray regionArray = new JSONObject(result).getJSONArray("regiones");
-        if (regionArray.length() > 0) {
-            RegionJsonHelper regionDao = new RegionJsonHelper();
-            List<Region> regionsList = regionDao.parseJsonArrayResponse(result
+    private List<Region> cacheRegionList() throws JSONException,
+            TimeoutException {
+        final RegionJsonHelper regionDao = new RegionJsonHelper();
+        final String jsonArrayResponse = regionDao.invokeDatastream(null, null);
+        if (jsonArrayResponse == null) {
+            throw new TimeoutException("There is not internet conection");
+        }
+        JSONArray jArray = new JSONObject(jsonArrayResponse)
+                .getJSONArray("result");
+
+        if (jArray.length() > 0) {
+            return regionDao.parseJsonArrayResponse(jsonArrayResponse
                     .toString());
-            localDao.cacheRegionList(regionsList);
-            localDao.addDatasetCacheControl();
-            Log.d(TAG, "cache count:" + localDao.getCachePharmaCount());
-            cacheComuneList(result);
         } else {
             throw new JSONException("There is an error parsing regions list");
         }
-
     }
 
-    private void cacheComuneList(String result) throws JSONException {
-        JSONArray jArray = new JSONObject(result).getJSONArray("comunas");
+    private List<Commune> cacheComuneList() throws JSONException,
+            TimeoutException {
+        CommuneJsonHelper communeDao = new CommuneJsonHelper();
+        final String jsonArrayResponse = communeDao
+                .invokeDatastream(null, null);
+        if (jsonArrayResponse == null) {
+            throw new TimeoutException("There is not internet conection");
+        }
+        JSONArray jArray = new JSONObject(jsonArrayResponse)
+                .getJSONArray("result");
+
         if (jArray.length() > 0) {
-            CommuneJsonHelper communeDao = new CommuneJsonHelper();
-            List<Commune> communeList = communeDao
-                    .parseJsonArrayResponse(result);
-            localDao.cacheCommuneList(communeList);
-            localDao.addDatasetCacheControl();
-            Log.d(TAG, "cache count:" + localDao.getCachePharmaCount());
+            return communeDao.parseJsonArrayResponse(jsonArrayResponse
+                    .toString());
         } else {
             throw new JSONException("There is an error parsing commune list");
         }
     }
 
     private boolean isDiferentSyncDay() {
-        if (pref.getInt(KEY_DAY, 0) != getIntegerDate(DATE_FORMAT_DAY)
-                || pref.getInt(KEY_MONTH, 0) != getIntegerDate(DATE_FORMAT_MONTH)) {
+        if (!pref.getString(KEY_DAY, "")
+                .equals(getIntegerDate(DATE_FORMAT_DAY))
+                || !pref.getString(KEY_MONTH, "").equals(
+                        getIntegerDate(DATE_FORMAT_MONTH))) {
             return true;
         }
         return false;
     }
 
     private void saveSyncDay() {
-        editor.putInt(KEY_DAY, getIntegerDate(DATE_FORMAT_DAY));
-        editor.putInt(KEY_MONTH, getIntegerDate(DATE_FORMAT_MONTH));
+        editor.putString(KEY_DAY, getIntegerDate(DATE_FORMAT_DAY));
+        editor.putString(KEY_MONTH, getIntegerDate(DATE_FORMAT_MONTH));
+        editor.putString(KEY_YEAR, getIntegerDate(DATE_FORMAT_YEAR));
         editor.commit();
     }
 
     @SuppressLint("SimpleDateFormat")
-    private Integer getIntegerDate(String date_format) {
+    private String getIntegerDate(String date_format) {
         Calendar calendar = Calendar.getInstance();
         SimpleDateFormat sdf = new SimpleDateFormat(date_format);
-        return Integer.valueOf(sdf.format(calendar.getTime()));
+        return sdf.format(calendar.getTime());
     }
 }
