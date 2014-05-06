@@ -2,10 +2,6 @@ package cl.gob.datos.farmacias.helpers;
 
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
-import java.text.SimpleDateFormat;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.GregorianCalendar;
 
 import android.content.Context;
 import android.content.Intent;

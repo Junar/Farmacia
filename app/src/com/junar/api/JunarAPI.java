@@ -1,14 +1,19 @@
 package com.junar.api;
 
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+
+import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
-import org.apache.http.client.ResponseHandler;
 import org.apache.http.client.methods.HttpGet;
-import org.apache.http.impl.client.BasicResponseHandler;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.params.BasicHttpParams;
 import org.apache.http.params.HttpConnectionParams;
 import org.apache.http.params.HttpParams;
 
+import android.net.http.AndroidHttpClient;
 import android.util.Log;
 
 public class JunarAPI {
@@ -36,7 +41,7 @@ public class JunarAPI {
     }
 
     private String getURI(String guid, String action, String[] arguments,
-            String[] filters) {
+            String[] filters, int limit, int page, long timestamp) {
         String localUri = getURI(guid, action);
 
         if (arguments != null) {
@@ -57,25 +62,39 @@ public class JunarAPI {
             }
         }
 
+        if (limit >= 0) {
+            localUri = localUri.concat("&limit=" + limit);
+        }
+
+        if (page >= 0) {
+            localUri = localUri.concat("&page=" + page);
+        }
+
+        if (timestamp >= 0) {
+            localUri = localUri.concat("&if_modified_since=" + timestamp);
+        }
+
         return localUri;
     }
 
-    public String invoke(String guid, String[] params, String[] filters) {
-        String url = getURI(guid, INVOKE_URI, params, filters);
+    public String invoke(String guid, String[] params, String[] filters,
+            int limit, int page, long timestamp) {
+        String url = getURI(guid, INVOKE_URI, params, filters, limit, page,
+                timestamp);
         return callURI(url);
     }
 
     public String invoke(String guid) {
-        String url = getURI(guid, INVOKE_URI, null, null);
+        String url = getURI(guid, INVOKE_URI, null, null, -1, -1, -1);
         return callURI(url);
     }
 
     public String invoke(String guid, String[] params, boolean hasFilter) {
         String url = null;
         if (hasFilter) {
-            getURI(guid, INVOKE_URI, null, params);
+            getURI(guid, INVOKE_URI, null, params, -1, -1, -1);
         } else {
-            getURI(guid, INVOKE_URI, params, null);
+            getURI(guid, INVOKE_URI, params, null, -1, -1, -1);
         }
         return callURI(url);
     }
@@ -94,22 +113,47 @@ public class JunarAPI {
         return "&output=".concat(this.OUTPUT);
     }
 
-    private String callURI(String url) {
-        HttpParams httpParameters = new BasicHttpParams();
-        HttpConnectionParams.setConnectionTimeout(httpParameters,
-                timeoutConnection);
-        HttpConnectionParams.setSoTimeout(httpParameters, timeoutSocket);
-        HttpClient httpClient = new DefaultHttpClient(httpParameters);
-        String response = null;
+    private String convertStreamToString(InputStream is) {
+        BufferedReader reader = new BufferedReader(new InputStreamReader(is));
+        StringBuilder sb = new StringBuilder();
+
+        String line = null;
         try {
-            Log.i(TAG, url);
-            HttpGet httpGet = new HttpGet(url);
-            ResponseHandler<String> responseHandler = new BasicResponseHandler();
-            response = httpClient.execute(httpGet, responseHandler);
-        } catch (Exception e) {
-            Log.e("callURI", e.getMessage());
+            while ((line = reader.readLine()) != null) {
+                sb.append(line + "\n");
+            }
+        } catch (IOException e) {
             e.printStackTrace();
+        } finally {
+            try {
+                is.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
         }
-        return response;
+        return sb.toString();
+    }
+
+    private String callURI(String url) {
+        String resp = null;
+        try {
+            HttpParams httpParameters = new BasicHttpParams();
+            HttpConnectionParams.setConnectionTimeout(httpParameters,
+                    timeoutConnection);
+            HttpConnectionParams.setSoTimeout(httpParameters, timeoutSocket);
+            HttpClient httpClient = new DefaultHttpClient(httpParameters);
+            Log.i(TAG, url);
+            HttpGet request = new HttpGet(url);
+            AndroidHttpClient.modifyRequestToAcceptGzipResponse(request);
+            HttpResponse response;
+            response = httpClient.execute(request);
+            InputStream inputStream = AndroidHttpClient
+                    .getUngzippedContent(response.getEntity());
+
+            resp = convertStreamToString(inputStream);
+        } catch (Exception e) {
+            Log.e(TAG, e.getMessage());
+        }
+        return resp;
     }
 }

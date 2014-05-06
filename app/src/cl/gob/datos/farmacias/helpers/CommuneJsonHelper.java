@@ -43,8 +43,15 @@ public class CommuneJsonHelper {
         return commune;
     }
 
-    public String invokeDatastream(String[] arguments, String[] filters) {
+    public String invokeDatastream(String[] arguments, String[] filters,
+            int limit, int page, long timestamp) {
         JunarAPI junar = new JunarAPI();
-        return junar.invoke(DATA_GUID, arguments, filters);
+        return junar.invoke(DATA_GUID, arguments, filters, limit, page,
+                timestamp);
+    }
+
+    public String invokeDatastream() {
+        JunarAPI junar = new JunarAPI();
+        return junar.invoke(DATA_GUID, null, null, -1, -1, -1);
     }
 }

@@ -33,6 +33,7 @@ public class SyncController {
     public static final String KEY_DAY = "day";
     public static final String KEY_MONTH = "month";
     public static final String KEY_YEAR = "year";
+    public static final String KEY_TIMESTAMP = "timestamp";
     private LocalDao localDao;
     private Context mContext;
     private SharedPreferences pref;
@@ -71,15 +72,20 @@ public class SyncController {
     }
 
     private void cachePharmaList() throws JSONException, TimeoutException {
+
         final PharmacyJsonHelper pharmacyDao = new PharmacyJsonHelper();
-        final String jsonArrayResponse = pharmacyDao.invokeDatastream(
-                new String[] { getIntegerDate(DATE_FORMAT_DAY).toString(),
-                        getIntegerDate(DATE_FORMAT_MONTH).toString() }, null);
+
+        final String jsonArrayResponse = pharmacyDao
+                .invokeDatastream(PharmacyJsonHelper.DATA_GUID_TURN);
         if (jsonArrayResponse == null) {
             throw new TimeoutException("There is not internet conection");
         }
         final JSONArray jArray = new JSONObject(jsonArrayResponse)
                 .getJSONArray("result");
+
+        if (jArray.length() == 0) {
+            throw new JSONException("There is an error parsing pharma list");
+        }
 
         Runnable runner = new Runnable() {
             private String hasFail = "false";
@@ -91,21 +97,18 @@ public class SyncController {
             @Override
             public void run() {
                 try {
-                    if (jArray.length() > 0) {
-                        localDao.cleanCacheRegionList();
-                        localDao.cleanCacheCommuneList();
-                        localDao.cleanCachePharmaList();
-                        List<Pharmacy> pharmaList = pharmacyDao
-                                .parseJsonArrayResponse(jsonArrayResponse);
-                        localDao.cacheRegionList(cacheRegionList());
-                        localDao.cacheCommuneList(cacheComuneList());
-                        localDao.cachePharmaList(pharmaList);
-                        localDao.addDatasetCacheControl();
-                        saveSyncDay();
-                    } else {
-                        throw new JSONException(
-                                "There is an error parsing pharma list");
-                    }
+                    localDao.cleanCacheRegionList();
+                    localDao.cleanCacheCommuneList();
+                    localDao.cleanCachePharmaList("T");
+                    List<Pharmacy> pharmaList = pharmacyDao
+                            .parseJsonArrayResponse(jsonArrayResponse,
+                                    PharmacyJsonHelper.DATA_GUID_TURN);
+                    downloadAllPharmacies(pharmacyDao);
+                    localDao.cacheRegionList(cacheRegionList());
+                    localDao.cacheCommuneList(cacheComuneList());
+                    localDao.cachePharmaList(pharmaList);
+                    localDao.addDatasetCacheControl();
+                    saveSyncDay();
                 } catch (Exception e) {
                     if (localDao.isFirstPopulate()) {
                         hasFail = "true";
@@ -114,6 +117,7 @@ public class SyncController {
                     }
                 }
             }
+
         };
 
         localDao.getDaoSession().runInTx(runner);
@@ -124,10 +128,37 @@ public class SyncController {
         }
     }
 
+    private void downloadAllPharmacies(PharmacyJsonHelper pharmacyDao)
+            throws TimeoutException, JSONException {
+        JSONArray jArrayComplete;
+        String jsonArrayResponseAllPharmacies = pharmacyDao.invokeDatastream(
+                PharmacyJsonHelper.DATA_GUID_NORMAL, null, null, -1, -1,
+                pref.getLong(KEY_TIMESTAMP, 0));
+        if (jsonArrayResponseAllPharmacies == null) {
+            throw new TimeoutException("There is not internet conection");
+        }
+
+        if (!(new JSONObject(jsonArrayResponseAllPharmacies).get("result") instanceof JSONArray)) {
+            return;
+        } else {
+            localDao.cleanCachePharmaList("N");
+            jArrayComplete = new JSONObject(jsonArrayResponseAllPharmacies)
+                    .getJSONArray("result");
+
+            if (jArrayComplete.length() > 0) {
+                List<Pharmacy> pharmaListComplete = pharmacyDao
+                        .parseJsonArrayResponse(jsonArrayResponseAllPharmacies,
+                                PharmacyJsonHelper.DATA_GUID_NORMAL);
+                localDao.cachePharmaList(pharmaListComplete);
+            }
+        }
+        saveSyncAllPharmaTimestamp();
+    }
+
     private List<Region> cacheRegionList() throws JSONException,
             TimeoutException {
         final RegionJsonHelper regionDao = new RegionJsonHelper();
-        final String jsonArrayResponse = regionDao.invokeDatastream(null, null);
+        final String jsonArrayResponse = regionDao.invokeDatastream();
         if (jsonArrayResponse == null) {
             throw new TimeoutException("There is not internet conection");
         }
@@ -145,8 +176,7 @@ public class SyncController {
     private List<Commune> cacheComuneList() throws JSONException,
             TimeoutException {
         CommuneJsonHelper communeDao = new CommuneJsonHelper();
-        final String jsonArrayResponse = communeDao
-                .invokeDatastream(null, null);
+        final String jsonArrayResponse = communeDao.invokeDatastream();
         if (jsonArrayResponse == null) {
             throw new TimeoutException("There is not internet conection");
         }
@@ -175,6 +205,11 @@ public class SyncController {
         editor.putString(KEY_DAY, getIntegerDate(DATE_FORMAT_DAY));
         editor.putString(KEY_MONTH, getIntegerDate(DATE_FORMAT_MONTH));
         editor.putString(KEY_YEAR, getIntegerDate(DATE_FORMAT_YEAR));
+        editor.commit();
+    }
+
+    private void saveSyncAllPharmaTimestamp() {
+        editor.putLong(KEY_TIMESTAMP, System.currentTimeMillis());
         editor.commit();
     }
 

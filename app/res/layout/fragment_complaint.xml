@@ -60,6 +60,15 @@
         android:hint="@string/pharma_complaint_email"
         android:inputType="textEmailAddress" />
 
+    <Spinner
+        android:id="@+id/pharma_complaint_reason"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="5dp"
+        android:background="@drawable/custom_selector"
+        android:prompt="@string/reason_spinner_label"
+        android:spinnerMode="dialog" />
+
     <EditText
         android:id="@+id/pharma_complaint_text"
         android:layout_width="fill_parent"

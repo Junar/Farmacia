@@ -3,6 +3,7 @@ package cl.gob.datos.farmacias.fragment;
 import java.util.ArrayList;
 import java.util.List;
 
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.util.Log;
@@ -24,10 +25,16 @@ import com.junar.searchpharma.Commune;
 import com.junar.searchpharma.Region;
 
 public class SearchPharmaFragment extends Fragment {
+    protected static final String KEY_REGION = "REGION";
+    protected static final String KEY_COMMUNE = "COMMUNE";
+    public static final String PREFS_NAME = "syncPharmaPreference";
     private int regionId;
     private int communeId;
     private Spinner spinnerRegion;
     private Spinner spinnerCommune;
+
+    private SharedPreferences pref;
+    private SharedPreferences.Editor editor;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -36,6 +43,13 @@ public class SearchPharmaFragment extends Fragment {
         View rootView = inflater.inflate(R.layout.fragment_commune, container,
                 false);
 
+        pref = getActivity().getApplicationContext().getSharedPreferences(
+                PREFS_NAME, 0);
+        editor = pref.edit();
+
+        final String regionName = pref.getString(KEY_REGION, "");
+        int regPosition = 0;
+
         // Spinners
         spinnerRegion = (Spinner) rootView.findViewById(R.id.spinner_region);
         spinnerCommune = (Spinner) rootView.findViewById(R.id.spinner_commune);
@@ -43,10 +57,19 @@ public class SearchPharmaFragment extends Fragment {
         List<Region> tmpList = new ArrayList<Region>();
         tmpList.add(new Region((long) 0, 0,
                 getString(R.string.region_spinner_label)));
-        for (Region region : localDao.getRegionList()) {
+        List<Region> regionList = localDao.getRegionList();
+        Region region;
+
+        for (int i = 0; i < regionList.size(); i++) {
+            region = regionList.get(i);
             tmpList.add(new Region(region.getId(), region.getCode(),
                     new String(region.getName())));
+            if (region.getName().equals(regionName)) {
+                regPosition = i + 1;
+            }
         }
+
+        final int regionPosition = regPosition;
 
         spinnerCommune.setEnabled(false);
         final List<Commune> tmpCommuneList = new ArrayList<Commune>();
@@ -63,6 +86,10 @@ public class SearchPharmaFragment extends Fragment {
         spinnerRegion.setAdapter(adapterRegion);
         spinnerCommune.setAdapter(adapterCommune);
 
+        if (regionPosition > 0) {
+            spinnerRegion.setSelection(regionPosition);
+        }
+
         spinnerRegion.setOnItemSelectedListener(new OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parentView,
@@ -71,19 +98,37 @@ public class SearchPharmaFragment extends Fragment {
                 Region region = (Region) parentView.getItemAtPosition(position);
                 regionId = region.getId().intValue();
                 try {
+                    editor.putString(KEY_REGION, region.getName());
+                    editor.commit();
+                    String communeName = pref.getString(KEY_COMMUNE, "");
                     LocalDao localDao = AppController.getInstace()
                             .getLocalDao();
-
                     tmpCommuneList.clear();
                     tmpCommuneList.add(comm);
-                    tmpCommuneList.addAll(localDao
-                            .getCommuneListByRegion(region));
+                    List<Commune> communeList = localDao
+                            .getCommuneListByRegion(region);
+                    Commune commune;
+                    int communePosition = 0;
+
+                    for (int i = 0; i < communeList.size(); i++) {
+                        commune = communeList.get(i);
+                        tmpCommuneList.add(new Commune(commune.getId(), commune
+                                .getCode(), commune.getRegionCode(),
+                                new String(commune.getName())));
+                        if (commune.getName().equals(communeName)) {
+                            communePosition = i + 1;
+                        }
+                    }
 
                     ArrayAdapter<Commune> adapterCommune = new ArrayAdapter<Commune>(
                             getActivity(), R.layout.spinner, tmpCommuneList);
                     if (regionId > 0) {
                         spinnerCommune.setEnabled(true);
                         spinnerCommune.setAdapter(adapterCommune);
+                        if (region.getName().equals(regionName)
+                                && regionPosition > 0 && communePosition > 0) {
+                            spinnerCommune.setSelection(communePosition);
+                        }
                     } else {
                         spinnerCommune.setSelection(0);
                         spinnerCommune.setEnabled(false);
@@ -106,9 +151,12 @@ public class SearchPharmaFragment extends Fragment {
                     Commune commune = (Commune) parentView
                             .getItemAtPosition(position);
                     communeId = commune.getId().intValue();
+                    editor.putString(KEY_COMMUNE, commune.getName());
+                    editor.commit();
                 } else {
                     communeId = 0;
                 }
+
             }
 
             @Override

@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string-array name="reasons_array">
+        <item>Seleccionar un motivo</item>
+        <item>Cerrada</item>
+        <item>Error de ubicación</item>
+        <item>Otro</item>
+    </string-array>
+
+</resources>

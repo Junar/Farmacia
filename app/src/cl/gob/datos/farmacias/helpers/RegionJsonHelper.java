@@ -16,7 +16,8 @@ public class RegionJsonHelper {
     private static final String TAG = RegionJsonHelper.class.getSimpleName();
     private String DATA_GUID = "CODIG-Y-NOMBR-REGIO-MINSA";
 
-    public List<Region> parseJsonArrayResponse(String response) throws JSONException {
+    public List<Region> parseJsonArrayResponse(String response)
+            throws JSONException {
         /**
          * {"tags":[],"id":"CODIG-REGIO-Y-NOMBR","result":[["Código de Región",
          * "Nombre de la Región"
@@ -89,8 +90,15 @@ public class RegionJsonHelper {
         return region;
     }
 
-    public String invokeDatastream(String[] arguments, String[] filters) {
+    public String invokeDatastream(String[] arguments, String[] filters,
+            int limit, int page, long timestamp) {
         JunarAPI junar = new JunarAPI();
-        return junar.invoke(DATA_GUID, arguments, filters);
+        return junar.invoke(DATA_GUID, arguments, filters, limit, page,
+                timestamp);
+    }
+
+    public String invokeDatastream() {
+        JunarAPI junar = new JunarAPI();
+        return junar.invoke(DATA_GUID, null, null, -1, -1, -1);
     }
 }

@@ -105,6 +105,7 @@ public class CustomPharmaAdapter extends ArrayAdapter<Pharmacy> implements
             holder.btnRoute = (Button) row.findViewById(R.id.btn_pharmacy_ruta);
             holder.btnShare = (Button) row
                     .findViewById(R.id.btn_pharmacy_share);
+            holder.imgIcon = (ImageView) row.findViewById(R.id.imgStatus);
             row.setTag(holder);
         } else {
             holder = (PharmaHolder) row.getTag();
@@ -113,6 +114,7 @@ public class CustomPharmaAdapter extends ArrayAdapter<Pharmacy> implements
         holder.txtTitle.setText(pharma.getName());
         holder.txtAddress.setText(pharma.getAddress());
         holder.txtSchedule.setText(pharma.getSchedule());
+        holder.imgIcon.bringToFront();
 
         if (pharma.getLatitude() != 0 && pharma.getLongitude() != 0
                 && currentLocation != null) {
@@ -137,6 +139,8 @@ public class CustomPharmaAdapter extends ArrayAdapter<Pharmacy> implements
         } else {
             holder.btnRoute.setVisibility(View.GONE);
         }
+
+        holder.imgIcon.setImageDrawable(pharma.getStatusImage(context));
 
         holder.btnRoute.setOnClickListener(new OnClickListener() {
 

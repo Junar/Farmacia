@@ -54,6 +54,7 @@ public class InitialActivity extends Activity {
             new Initialize().execute();
         } else {
             progress.setVisibility(View.GONE);
+            loading.setVisibility(View.VISIBLE);
             loading.setText(getString(R.string.play_service_not_available));
         }
     }
@@ -95,6 +96,7 @@ public class InitialActivity extends Activity {
                 }
                 goToSearchPharmaActivity();
             } else {
+                loading.setVisibility(View.VISIBLE);
                 progress.setVisibility(View.GONE);
                 if (result.equals(CONECTIVITY_ERROR)) {
                     loading.setText(getText(R.string.no_conection_error)

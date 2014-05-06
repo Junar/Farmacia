@@ -1,7 +1,10 @@
 package cl.gob.datos.farmacias.helpers;
 
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
+import java.util.TimeZone;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -14,19 +17,27 @@ import com.junar.searchpharma.Pharmacy;
 
 public class PharmacyJsonHelper {
     private static final String TAG = PharmacyJsonHelper.class.getSimpleName();
-    private String DATA_GUID = "FARMA-DE-TURNO-EN-LINEA";
+    public static final String DATA_GUID_TURN = "FARMA-DE-TURNO-EN-LINEA";
+    public static final String DATA_GUID_NORMAL = "FARMA-EN-CHILE";
+    private Date currentDate = null;
 
-    public void getDatastreamInfo() {
+    public void getDatastreamInfo(String guid) {
         JunarAPI junar = new JunarAPI();
-        junar.info(DATA_GUID);
+        junar.info(guid);
     }
 
-    public String invokeDatastream(String[] arguments, String[] filters) {
+    public String invokeDatastream(String guid) {
         JunarAPI junar = new JunarAPI();
-        return junar.invoke(DATA_GUID, arguments, filters);
+        return junar.invoke(guid, null, null, -1, -1, -1);
     }
 
-    public List<Pharmacy> parseJsonArrayResponse(String response)
+    public String invokeDatastream(String guid, String[] arguments,
+            String[] filters, int limit, int page, long timestamp) {
+        JunarAPI junar = new JunarAPI();
+        return junar.invoke(guid, arguments, filters, limit, page, timestamp);
+    }
+
+    public List<Pharmacy> parseJsonArrayResponse(String response, String guid)
             throws JSONException {
         /**
          * { "tags":[], "id":"LISTA-FARMA-DE-TURNO-2", "result": [
@@ -40,16 +51,17 @@ public class PharmacyJsonHelper {
         List<Pharmacy> pharmaList = new ArrayList<Pharmacy>();
         JSONObject jsonResponse = new JSONObject(response);
         JSONArray resultArray = jsonResponse.getJSONArray("result");
+        currentDate = Calendar.getInstance(TimeZone.getDefault()).getTime();
 
         for (int i = 1; i < resultArray.length(); i++) {
             JSONArray columnArray = resultArray.getJSONArray(i);
-            Pharmacy pharma = getPharmacyFromJson(columnArray);
+            Pharmacy pharma = getPharmacyFromJson(columnArray, guid);
             pharmaList.add(pharma);
         }
         return pharmaList;
     }
 
-    public Pharmacy getPharmacyFromJson(JSONArray json) {
+    public Pharmacy getPharmacyFromJson(JSONArray json, String guid) {
         Pharmacy pharma = new Pharmacy();
         try {
             /**
@@ -59,19 +71,27 @@ public class PharmacyJsonHelper {
              * "DESDE 8:00 AM. HASTA LAS 8:00 DEL DÍA SIGUIENTE"
              * ,"-23.6491776","-70.3963394",""],
              */
+
             pharma.setRegion(json.getString(0));
             pharma.setCommune(json.getString(1));
-            pharma.setName(json.getString(3));
             pharma.setAddress(json.getString(2));
-            pharma.setSchedule("DESDE LAS " + json.getString(4) + " HASTA LAS "
-                    + json.getString(5));
+            pharma.setName(json.getString(3));
+            pharma.setOpenFrom(json.getString(4));
+            pharma.setOpenTo(json.getString(5));
             pharma.setPhone(json.getString(8));
+            pharma.setSyncroDate(currentDate);
+            if (guid.equals(PharmacyJsonHelper.DATA_GUID_TURN)) {
+                pharma.setType("T");
+            } else {
+                pharma.setType("N");
+            }
+
             try {
-                pharma.setLatitude((float) json.getDouble(6));
-                pharma.setLongitude((float) json.getDouble(7));
+                pharma.setLatitude(json.getDouble(6));
+                pharma.setLongitude(json.getDouble(7));
             } catch (JSONException jee) {
-                pharma.setLatitude(Float.valueOf(0));
-                pharma.setLongitude(Float.valueOf(0));
+                pharma.setLatitude(0.0d);
+                pharma.setLongitude(0.0d);
             }
         } catch (JSONException e) {
             Log.e(TAG, e.getMessage());

@@ -21,7 +21,6 @@ import cl.gob.datos.farmacias.helpers.Utils;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.SupportMapFragment;
-import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
@@ -44,9 +43,13 @@ public class PharmaDetailActivity extends ActionBarActivity {
 
         pharma = AppController.getInstace().getPharmaById(pharId);
 
+        ImageView imgStatus = (ImageView) findViewById(R.id.imgStatus);
+        imgStatus.setImageDrawable(pharma.getStatusImageDetail(this));
+
         TextView pharmacyHorario = (TextView) findViewById(R.id.pharmacy_horario);
         pharmacyHorario.setText(getText(R.string.current_day) + " "
-                + Utils.getDatePhone(getApplicationContext()) + " - " + pharma.getSchedule());
+                + Utils.getDatePhone(getApplicationContext()) + " - "
+                + pharma.getSchedule());
 
         TextView address = (TextView) findViewById(R.id.parking_direccion);
         address.setText(pharma.getAddress());
@@ -106,7 +109,7 @@ public class PharmaDetailActivity extends ActionBarActivity {
 
         MarkerOptions markerOpt = new MarkerOptions().position(new LatLng(
                 pharma.getLatitude(), pharma.getLongitude()));
-        markerOpt.icon(BitmapDescriptorFactory.fromResource(R.drawable.marker));
+        markerOpt.icon(pharma.getMarkerIcon());
         Marker marker = mapa.addMarker(markerOpt);
         marker.showInfoWindow();
         mapa.moveCamera(CameraUpdateFactory.newLatLngZoom(marker.getPosition(),

@@ -21,6 +21,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.location.Location;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -32,8 +33,10 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 import cl.gob.datos.farmacias.R;
@@ -53,6 +56,7 @@ public class ComplaintPharmaActivity extends ActionBarActivity {
 
     private EditText name;
     private EditText text;
+    private Spinner reasonSpinner;
     private static File mediaFile;
     private TextView pharmacyName;
     private EditText mail;
@@ -73,6 +77,7 @@ public class ComplaintPharmaActivity extends ActionBarActivity {
 
         name = (EditText) findViewById(R.id.pharma_complaint_name);
         mail = (EditText) findViewById(R.id.pharma_complaint_email);
+        reasonSpinner = (Spinner) findViewById(R.id.pharma_complaint_reason);
         text = (EditText) findViewById(R.id.pharma_complaint_text);
 
         TextView address = (TextView) findViewById(R.id.pharma_address);
@@ -81,6 +86,11 @@ public class ComplaintPharmaActivity extends ActionBarActivity {
         pharmacyName = (TextView) findViewById(R.id.pharma_name);
         pharmacyName.setText(pharma.getName());
 
+        ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(
+                this, R.array.reasons_array, R.layout.spinner);
+
+        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        reasonSpinner.setAdapter(adapter);
         btnPhoto = (Button) findViewById(R.id.take_photo);
         btnPhoto.setOnClickListener(new OnClickListener() {
 
@@ -161,6 +171,13 @@ public class ComplaintPharmaActivity extends ActionBarActivity {
             mail.setError(getString(R.string.pharma_complaint_email_empty)
                     .toString());
             mail.requestFocus();
+        } else if (reasonSpinner.getSelectedItemPosition() == 0) {
+            Toast.makeText(
+                    getApplicationContext(),
+                    getApplicationContext().getString(
+                            R.string.pharma_complaint_select_reason),
+                    Toast.LENGTH_LONG).show();
+
         } else if (TextUtils.isEmpty(text.getText().toString())) {
             name.setError(null);
             mail.setError(null);
@@ -285,6 +302,14 @@ public class ComplaintPharmaActivity extends ActionBarActivity {
                     }
                     obj.put("nombreDenunciante", name.getText().toString());
                     obj.put("emailDenunciante", mail.getText().toString());
+                    obj.put("motivo", reasonSpinner.getSelectedItem()
+                            .toString());
+
+                    Location loc = AppController.getLastLocation();
+                    if (loc != null) {
+                        obj.put("latitud", loc.getLatitude());
+                        obj.put("longitud", loc.getLongitude());
+                    }
 
                     StringEntity se = new StringEntity(obj.toString(), "UTF-8");
                     post.setEntity(se);

@@ -86,19 +86,37 @@ public class LocalDao {
     }
 
     public List<Pharmacy> getPharmaListByRegionAndComune(int region, int commune) {
-        return getPharmaListByRegionAndComune(region, commune, null);
+        return getPharmaListByRegionAndComune(region, commune, null, null);
     }
 
     public List<Pharmacy> getPharmaListByRegionAndComune(int region,
-            int commune, LatLng location) {
+            int commune, String type) {
+        return getPharmaListByRegionAndComune(region, commune, null, type);
+    }
+
+    public List<Pharmacy> getPharmaListByRegionAndComune(int region,
+            int commune, LatLng location, String type) {
         List<Pharmacy> pharmacyList;
         if (region == 0 && commune == 0) {
-            pharmacyList = getPharmaList();
+            if (type != null) {
+                pharmacyList = getPharmaList(type);
+            } else {
+                pharmacyList = getPharmaList();
+            }
         } else {
-            pharmacyList = pharmaDao
-                    .queryBuilder()
-                    .where(PharmacyDao.Properties.Region.eq(region),
-                            PharmacyDao.Properties.Commune.eq(commune)).list();
+            if (type != null) {
+                pharmacyList = pharmaDao
+                        .queryBuilder()
+                        .where(PharmacyDao.Properties.Region.eq(region),
+                                PharmacyDao.Properties.Commune.eq(commune),
+                                PharmacyDao.Properties.Type.eq(type)).list();
+            } else {
+                pharmacyList = pharmaDao
+                        .queryBuilder()
+                        .where(PharmacyDao.Properties.Region.eq(region),
+                                PharmacyDao.Properties.Commune.eq(commune))
+                        .list();
+            }
         }
         if (location != null) {
             List<Pharmacy> list = new ArrayList<Pharmacy>();
@@ -164,12 +182,22 @@ public class LocalDao {
         this.pharmaDao.deleteAll();
     }
 
+    public void cleanCachePharmaList(String type) {
+        this.pharmaDao.deleteInTx(this.pharmaDao.queryBuilder()
+                .where(PharmacyDao.Properties.Type.eq(type)).list());
+    }
+
     public long getCachePharmaCount() {
         return this.pharmaDao.count();
     }
 
     public List<Pharmacy> getPharmaList() {
         return this.pharmaDao.queryBuilder().list();
+    }
+
+    public List<Pharmacy> getPharmaList(String type) {
+        return this.pharmaDao.queryBuilder()
+                .where(PharmacyDao.Properties.Type.eq(type)).list();
     }
 
     public List<Pharmacy> getPharmaByMonthDay(Integer month, Integer day) {

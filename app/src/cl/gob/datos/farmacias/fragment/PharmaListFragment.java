@@ -61,7 +61,7 @@ public class PharmaListFragment extends Fragment {
                         location.getLongitude());
             }
             pharmaList = localDao.getPharmaListByRegionAndComune(region,
-                    commune, currentLocation);
+                    commune, currentLocation, null);
             regionName.setText(args.getString("title"));
         } else {
             long radio = args.getLong("radio");
@@ -70,7 +70,7 @@ public class PharmaListFragment extends Fragment {
                         args.getDouble("longitude"));
             }
             pharmaList = AppController.getInstace().filterNearestPharma(
-                    currentLocation, radio);
+                    currentLocation, radio, null);
             regionName.setText(getText(R.string.nearby_pharmacies_text) + " "
                     + radio + " mts");
         }

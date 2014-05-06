@@ -8,14 +8,12 @@ import android.app.Application;
 import android.location.Location;
 import android.os.Bundle;
 import android.util.Log;
-import cl.gob.datos.farmacias.R;
 import cl.gob.datos.farmacias.helpers.LocalDao;
 import cl.gob.datos.farmacias.helpers.Utils;
 
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GooglePlayServicesClient;
 import com.google.android.gms.location.LocationClient;
-import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.junar.searchpharma.Pharmacy;
@@ -109,7 +107,7 @@ public class AppController extends Application implements
                 .position(
                         new LatLng(pharma.getLatitude(), pharma.getLongitude()))
                 .title(pharma.getName()).snippet(pharma.toString())
-                .icon(BitmapDescriptorFactory.fromResource(R.drawable.marker));
+                .icon(pharma.getMarkerIcon());
 
         return marker;
     }
@@ -118,15 +116,22 @@ public class AppController extends Application implements
             long curRadioInMeters) {
         LatLng location = new LatLng(actualLocation.getLatitude(),
                 actualLocation.getLongitude());
-        return filterNearestPharma(location, curRadioInMeters);
+        return filterNearestPharma(location, curRadioInMeters, null);
+    }
+
+    public List<Pharmacy> filterNearestPharma(Location actualLocation,
+            long curRadioInMeters, String type) {
+        LatLng location = new LatLng(actualLocation.getLatitude(),
+                actualLocation.getLongitude());
+        return filterNearestPharma(location, curRadioInMeters, type);
     }
 
     public List<Pharmacy> filterNearestPharma(LatLng actualLocation,
-            long curRadioInMeters) {
+            long curRadioInMeters, String type) {
         if (actualLocation == null)
             return null;
         List<Pharmacy> pharmaMarkers = localDao.getPharmaListByRegionAndComune(
-                0, 0, actualLocation);
+                0, 0, actualLocation, type);
         List<Pharmacy> pharmasInRadio = new ArrayList<Pharmacy>();
 
         for (Pharmacy marker : pharmaMarkers) {
